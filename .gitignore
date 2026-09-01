@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.vscode/
+.streamlit/secrets.toml
+*.corrupt-*.json
+streamlit.*.log
+data/accounts.json*
+data/users/
+data/water_buddy.json
