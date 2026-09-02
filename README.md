@@ -1,7 +1,7 @@
 <div align="center">
 
 # 💧 Water Buddy
-streamlit
+streamlit app link: https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/
 
 ### A playful, private hydration companion that makes every sip count.
 
