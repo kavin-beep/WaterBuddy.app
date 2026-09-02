@@ -13,6 +13,8 @@
 
 **Water Buddy turns hydration into a small daily adventure—with quick logging, useful insights, gentle reminders, achievements, and a virtual companion named FLOW.**
 
+streamlit app deploy link: https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/
+
 </div>
 
 > [!NOTE]
