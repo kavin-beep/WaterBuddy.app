@@ -45,7 +45,7 @@ python -m pip install -r requirements.txt
 python -m streamlit run streamlit_app.py
 ```
 
-Open [http://localhost:8501](http://localhost:8501), choose **Create account**, and start logging water. Later launches can use **Sign in**.
+Open the streamlit link given above, choose **Create account**, and start logging water. Later launches can use **Sign in**.
 
 <details>
 <summary><strong>macOS / Linux commands</strong></summary>
