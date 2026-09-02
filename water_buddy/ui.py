@@ -95,7 +95,9 @@ def inject_global_styles(
             "background": "#030817",
             "surface": "#09152C",
             "elevated": "#0E1D39",
-            "field": "#0B1933",
+            "field": "#FFFFFF",
+            "field_text": "#10213D",
+            "field_muted": "#526780",
             "overlay": "#071329F2",
             "text": "#FFFFFF",
             "muted": "#A4B5CE",
@@ -116,6 +118,8 @@ def inject_global_styles(
             "surface": "#FFFFFF",
             "elevated": "#EDF3FC",
             "field": "#F8FAFE",
+            "field_text": "#10213D",
+            "field_muted": "#526780",
             "overlay": "#FFFFFFF2",
             "text": "#10213D",
             "muted": "#526780",
@@ -136,6 +140,8 @@ def inject_global_styles(
             "surface": "#FFFDF8",
             "elevated": "#EFE5D5",
             "field": "#FBF6EC",
+            "field_text": "#211A17",
+            "field_muted": "#665A50",
             "overlay": "#FFFDF8F2",
             "text": "#211A17",
             "muted": "#665A50",
@@ -155,7 +161,9 @@ def inject_global_styles(
             "background": "#02040B",
             "surface": "#080D19",
             "elevated": "#10192C",
-            "field": "#071220",
+            "field": "#FFFFFF",
+            "field_text": "#10213D",
+            "field_muted": "#526780",
             "overlay": "#050A14F2",
             "text": "#FFFFFF",
             "muted": "#AFBDD3",
@@ -225,6 +233,8 @@ def inject_global_styles(
             --wb-surface: {palette["surface"]};
             --wb-elevated: {palette["elevated"]};
             --wb-field: {palette["field"]};
+            --wb-field-ink: {palette["field_text"]};
+            --wb-field-muted: {palette["field_muted"]};
             --wb-overlay: {palette["overlay"]};
             --wb-ink: {palette["text"]};
             --wb-muted: {palette["muted"]};
@@ -1034,7 +1044,7 @@ def inject_global_styles(
             border-color: var(--wb-line) !important;
             border-radius: .9rem !important;
             background: var(--wb-field) !important;
-            color: var(--wb-ink) !important;
+            color: var(--wb-field-ink) !important;
             box-shadow: inset 0 1px 0 color-mix(in srgb, #FFFFFF 5%, transparent);
         }}
 
@@ -1048,7 +1058,7 @@ def inject_global_styles(
         .stApp [data-testid="stSelectbox"] [data-baseweb="select"] > div,
         .stApp [data-testid="stMultiSelect"] [data-baseweb="select"] > div {{
             background-color: var(--wb-field) !important;
-            color: var(--wb-ink) !important;
+            color: var(--wb-field-ink) !important;
         }}
 
         .stApp [data-baseweb="input"]:focus-within,
@@ -1066,8 +1076,8 @@ def inject_global_styles(
         .stApp [data-baseweb="select"] span,
         .stApp [data-baseweb="select"] p {{
             background-color: transparent !important;
-            color: var(--wb-ink) !important;
-            -webkit-text-fill-color: var(--wb-ink) !important;
+            color: var(--wb-field-ink) !important;
+            -webkit-text-fill-color: var(--wb-field-ink) !important;
             font-weight: 600;
             caret-color: var(--wb-cyan);
         }}
@@ -1076,13 +1086,14 @@ def inject_global_styles(
         .stApp input:-webkit-autofill:hover,
         .stApp input:-webkit-autofill:focus {{
             -webkit-box-shadow: 0 0 0 1000px var(--wb-field) inset !important;
-            -webkit-text-fill-color: var(--wb-ink) !important;
+            -webkit-text-fill-color: var(--wb-field-ink) !important;
             caret-color: var(--wb-cyan);
         }}
 
         .stApp input::placeholder,
         .stApp textarea::placeholder {{
-            color: var(--wb-muted) !important;
+            color: var(--wb-field-muted) !important;
+            -webkit-text-fill-color: var(--wb-field-muted) !important;
             opacity: 1;
         }}
 

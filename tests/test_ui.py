@@ -337,9 +337,9 @@ class ThemeVariantTests(unittest.TestCase):
     def test_each_theme_owns_its_box_colors(self) -> None:
         expected_surfaces = {
             "Light": ("#FFFFFF", "#F8FAFE"),
-            "Dark": ("#09152C", "#0B1933"),
+            "Dark": ("#09152C", "#FFFFFF"),
             "Japanese": ("#FFFDF8", "#FBF6EC"),
-            "Cyber": ("#080D19", "#071220"),
+            "Cyber": ("#080D19", "#FFFFFF"),
         }
         for theme, (surface, field) in expected_surfaces.items():
             with self.subTest(theme=theme):
@@ -355,10 +355,11 @@ class ThemeVariantTests(unittest.TestCase):
                     stylesheet,
                 )
                 self.assertIn(
-                    "-webkit-text-fill-color: var(--wb-ink) !important;",
+                    "-webkit-text-fill-color: var(--wb-field-ink) !important;",
                     stylesheet,
                 )
                 self.assertIn('[data-baseweb="base-input"]', stylesheet)
+                self.assertIn("--wb-field-ink: ", stylesheet)
 
     def test_shell_does_not_consult_streamlit_theme(self) -> None:
         shell = (Path(__file__).resolve().parents[1] / "streamlit_app.py").read_text(
