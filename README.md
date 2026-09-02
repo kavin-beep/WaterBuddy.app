@@ -1,6 +1,7 @@
 <div align="center">
 
 # 💧 Water Buddy
+streamlit
 
 ### A playful, private hydration companion that makes every sip count.
 
