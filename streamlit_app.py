@@ -23,6 +23,7 @@ from water_buddy.domain import (
 from water_buddy.interaction_audio import mount_interface_sounds
 from water_buddy.pet import pet_snapshot
 from water_buddy.storage import JsonStore, StorageError
+from water_buddy.streamlit_theme import mount_streamlit_theme
 from water_buddy.ui import inject_global_styles, render_brand, render_pet
 from water_buddy.units import format_volume
 
@@ -327,8 +328,8 @@ preferences = (
     else {}
 )
 preferences = preferences if isinstance(preferences, Mapping) else {}
-# Water Buddy's saved preference is the only theme authority. The host
-# Streamlit light/dark setting must never recolor app surfaces or text.
+# Water Buddy's saved preference is the theme authority. Its four display
+# themes also select the matching dark or light mode for Streamlit's shell.
 theme = normalize_theme(preferences.get("theme", "Dark"))
 background_motion = bool(preferences.get("background_motion", True))
 sound_enabled = bool(preferences.get("sound_enabled", True))
@@ -339,6 +340,7 @@ if interface_sound_volume not in {"Soft", "Balanced", "Vivid"}:
     interface_sound_volume = "Balanced"
 
 inject_global_styles(theme, motion_enabled=background_motion)
+mount_streamlit_theme(theme)
 mount_interface_sounds(sound_enabled, interface_sound_volume)
 
 account_init_error = st.session_state.get("account_init_error")
