@@ -15,6 +15,7 @@ from collections.abc import Mapping
 
 import streamlit as st
 
+from water_buddy.pet import hourly_pet_message
 from water_buddy.units import format_volume
 
 _HEX_COLOR = re.compile(r"^#[0-9a-fA-F]{6}$")
@@ -4254,6 +4255,24 @@ def render_pet(
             </aside>
         </section>
         """
+    )
+
+
+@st.fragment(run_every="1h")
+def render_hourly_pet(
+    pet: Mapping[str, object],
+    hydration_progress: float,
+    compact: bool = False,
+) -> None:
+    """Render a pet whose quote, tip, or fact advances once per hour."""
+
+    hourly = hourly_pet_message()
+    hourly_pet = dict(pet) if isinstance(pet, Mapping) else {}
+    hourly_pet["speech"] = f"{hourly['kind']}: {hourly['text']}"
+    render_pet(hourly_pet, hydration_progress, compact=compact)
+    st.caption(
+        f":material/schedule: Hourly {hourly['kind'].lower()} from "
+        f"{hourly_pet.get('name', 'your buddy')} · changes every hour."
     )
 
 

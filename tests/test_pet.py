@@ -18,6 +18,7 @@ from water_buddy.pet import (
     daily_quests,
     default_pet_state,
     equip_accessory,
+    hourly_pet_message,
     normalize_pet_state,
     pet_snapshot,
     rename_pet,
@@ -88,6 +89,23 @@ class PetStateTests(unittest.TestCase):
         )
         self.assertEqual(snapshot["evolution_name"], "Dewdrop")
         self.assertIn("seafoam_bow", {item["id"] for item in snapshot["available_accessories"]})
+
+
+class HourlyPetMessageTests(unittest.TestCase):
+    def test_message_is_stable_within_an_hour_and_rotates_each_hour(self) -> None:
+        first_time = datetime(2026, 9, 2, 10, 5)
+        first = hourly_pet_message(first_time)
+        same_hour = hourly_pet_message(first_time.replace(minute=59, second=59))
+        second = hourly_pet_message(first_time + timedelta(hours=1))
+        third = hourly_pet_message(first_time + timedelta(hours=2))
+
+        self.assertEqual(first, same_hour)
+        self.assertEqual(
+            {first["kind"], second["kind"], third["kind"]},
+            {"Quote", "Tip", "Fact"},
+        )
+        self.assertNotEqual(first["hour_key"], second["hour_key"])
+        self.assertTrue(all(message["text"] for message in (first, second, third)))
 
 
 class HydrationRewardTests(unittest.TestCase):

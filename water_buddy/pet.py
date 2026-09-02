@@ -129,12 +129,68 @@ ENERGY_DECAY_PER_HOUR = 0.75
 HAPPINESS_DECAY_PER_HOUR = 0.40
 MAX_DECAY_HOURS = 72.0
 
+HOURLY_PET_QUOTES: tuple[str, ...] = (
+    "Small sips can build steady habits.",
+    "Every refill is a fresh little start.",
+    "Consistency turns tiny ripples into a flowing routine.",
+    "Keep it gentle, keep it steady, keep it flowing.",
+    "Your next healthy choice can be wonderfully small.",
+    "A bottle nearby is a quiet promise to your future self.",
+    "Progress is made one mindful sip at a time.",
+    "There is no race here—just a rhythm that works for you.",
+)
+
+HOURLY_PET_TIPS: tuple[str, ...] = (
+    "Keep a reusable bottle where you can easily see and reach it.",
+    "Serve water with meals to make it part of an existing routine.",
+    "Add lemon, lime, cucumber, or berries when you want more flavor.",
+    "Choose water instead of a sugary drink when that suits you.",
+    "Use a regular daily cue—like a break or meal—as a refill reminder.",
+    "Choose water when eating out for a simple hydration-friendly option.",
+    "Hot weather and physical activity can increase your fluid needs.",
+    "Water-rich fruits and vegetables can also contribute to fluid intake.",
+)
+
+HOURLY_PET_FACTS: tuple[str, ...] = (
+    "Water helps your body maintain a normal temperature.",
+    "Water helps lubricate and cushion your joints.",
+    "Water helps protect the spinal cord and other sensitive tissues.",
+    "Your body uses water to remove waste through several normal processes.",
+    "Food—especially many fruits and vegetables—can add to fluid intake.",
+    "Hydration needs vary with factors such as age, activity, and environment.",
+    "Plain water has no calories.",
+    "Dehydration can affect clear thinking and mood and can contribute to overheating.",
+)
+
 
 def _local_now(value: datetime | None = None) -> datetime:
     current = value or datetime.now()
     if current.tzinfo is not None:
         current = current.astimezone().replace(tzinfo=None)
     return current.replace(microsecond=0)
+
+
+def hourly_pet_message(now: datetime | None = None) -> dict[str, str]:
+    """Return a stable quote, tip, or fact for the current local hour.
+
+    The hour itself selects the content, so the message advances without
+    writing timer state and immediately catches up after the app is reopened.
+    """
+
+    current = _local_now(now)
+    absolute_hour = current.date().toordinal() * 24 + current.hour
+    catalogs = (
+        ("Quote", HOURLY_PET_QUOTES),
+        ("Tip", HOURLY_PET_TIPS),
+        ("Fact", HOURLY_PET_FACTS),
+    )
+    kind, messages = catalogs[absolute_hour % len(catalogs)]
+    message_index = (absolute_hour // len(catalogs)) % len(messages)
+    return {
+        "kind": kind,
+        "text": messages[message_index],
+        "hour_key": current.strftime("%Y-%m-%dT%H"),
+    }
 
 
 def _safe_int(
@@ -804,6 +860,9 @@ __all__ = [
     "CARE_ACTIONS",
     "DEFAULT_PET_NAME",
     "EVOLUTION_STAGES",
+    "HOURLY_PET_FACTS",
+    "HOURLY_PET_QUOTES",
+    "HOURLY_PET_TIPS",
     "LEVEL_XP_THRESHOLDS",
     "MAX_LEVEL",
     "PET_SPECIES",
@@ -813,6 +872,7 @@ __all__ = [
     "daily_quests",
     "default_pet_state",
     "equip_accessory",
+    "hourly_pet_message",
     "normalize_pet_state",
     "pet_snapshot",
     "rename_pet",

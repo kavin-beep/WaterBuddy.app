@@ -24,7 +24,7 @@ Water Buddy turns general age and occupation guidance into a practical daily goa
 |---|---|
 | 🫊3 **Effortless tracking** | Customizable one-tap amounts, correction and deletion, undo, safe reset, and a 30-second Sip Guard against accidental duplicates |
 | 🎯 **Personal goals** | Age- and occupation-aware guidance with custom adjustments and manual overrides |
-| 💙 **FLOW hydration pet** | Moods, care actions, quests, evolution, 20 XP levels, and Samurai, Cyborg, and Cool Guy milestone outfits |
+| 💙 **FLOW hydration pet** | Hourly quotes, tips, and facts; moods, care actions, quests, evolution, 20 XP levels, and milestone outfits |
 | 📊 **Useful insights** | Consistent 7/14/30-day trends, adherence, streaks, calendar-week challenges, and fair scoring for new users |
 | 🏆 **Motivation** | Eight canonical achievement badges, daily tips, live pace feedback, and goal celebrations |
 | 🔔 **Gentle reminders** | Configurable intervals, quiet hours, snooze/dismiss actions, and automatic rest after reaching the goal |

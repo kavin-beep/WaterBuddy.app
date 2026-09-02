@@ -22,7 +22,7 @@ from water_buddy.ui import (
     mount_page_ambience,
     page_intro,
     render_bottle,
-    render_pet,
+    render_hourly_pet,
 )
 
 mount_page_ambience("home")
@@ -220,9 +220,7 @@ with st.container(
             )
 
     with st.container(key="home-buddy-panel", width=380):
-        home_pet = dict(pet)
-        home_pet["speech"] = _progress_message(summary["progress"])
-        render_pet(home_pet, summary["progress"], compact=True)
+        render_hourly_pet(pet, summary["progress"], compact=True)
 
 st.space("small")
 with st.container(border=True, key="home-quick-log"):

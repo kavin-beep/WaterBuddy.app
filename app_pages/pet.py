@@ -15,7 +15,7 @@ from water_buddy.pet import (
     pet_snapshot,
     rename_pet,
 )
-from water_buddy.ui import mount_page_ambience, page_intro, render_pet
+from water_buddy.ui import mount_page_ambience, page_intro, render_hourly_pet
 from water_buddy.units import format_volume, normalize_units
 
 mount_page_ambience("pet")
@@ -360,7 +360,7 @@ page_intro(
     f"Level {pet_level}",
 )
 
-render_pet(snapshot, summary["progress"])
+render_hourly_pet(snapshot, summary["progress"])
 
 st.subheader("Care & play")
 st.caption("Care actions are gentle boosts. Your real hydration progress remains the strongest source of pet growth.")
