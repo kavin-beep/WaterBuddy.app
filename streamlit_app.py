@@ -327,9 +327,9 @@ preferences = (
     else {}
 )
 preferences = preferences if isinstance(preferences, Mapping) else {}
-theme = normalize_theme(
-    preferences.get("theme", st.context.theme.type or "Dark")
-)
+# Water Buddy's saved preference is the only theme authority. The host
+# Streamlit light/dark setting must never recolor app surfaces or text.
+theme = normalize_theme(preferences.get("theme", "Dark"))
 background_motion = bool(preferences.get("background_motion", True))
 sound_enabled = bool(preferences.get("sound_enabled", True))
 interface_sound_volume = str(

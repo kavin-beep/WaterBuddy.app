@@ -248,6 +248,7 @@ def inject_global_styles(
             --background-color: {palette["background"]};
             --secondary-background-color: {palette["surface"]};
             --text-color: {palette["text"]};
+            --border-color: {palette["line"]};
             color-scheme: {color_scheme};
         }}
 
@@ -267,6 +268,66 @@ def inject_global_styles(
             background: {app_background}, var(--wb-bg) !important;
             background-size: {palette["background_size"]};
             color: var(--wb-ink);
+        }}
+
+        /* Water Buddy owns every readable surface. These rules intentionally
+           override Streamlit's host light/dark mode after each app rerun. */
+        .stApp :where(
+            [data-testid="stVerticalBlockBorderWrapper"],
+            [data-testid="stMetric"],
+            [data-testid="stExpander"],
+            [data-testid="stForm"],
+            [data-testid="stStatusWidget"],
+            [data-testid="stAlert"],
+            [data-testid="stAlertContainer"],
+            [data-testid="stFileUploaderDropzone"],
+            [data-testid="stDataFrame"],
+            [data-testid="stTable"]
+        ) {{
+            border-color: var(--wb-line) !important;
+            background-color: var(--wb-surface) !important;
+            color: var(--wb-ink) !important;
+        }}
+
+        .stApp :where(
+            [data-testid="stVerticalBlockBorderWrapper"],
+            [data-testid="stMetric"],
+            [data-testid="stExpander"],
+            [data-testid="stForm"],
+            [data-testid="stStatusWidget"],
+            [data-testid="stAlert"],
+            [data-testid="stAlertContainer"]
+        ) :where(h1, h2, h3, h4, h5, h6, p, span, label, li, strong) {{
+            color: var(--wb-ink) !important;
+        }}
+
+        .stApp :where(
+            [data-baseweb="input"],
+            [data-baseweb="textarea"],
+            [data-baseweb="select"] > div,
+            [data-testid="stNumberInputContainer"],
+            [data-testid="stDateInputField"],
+            [data-testid="stDateTimeInputField"],
+            [data-testid="stTimeInput"] > div,
+            [data-testid="stMultiSelect"] > div,
+            [data-testid="stChatInput"]
+        ) {{
+            border-color: var(--wb-line) !important;
+            background-color: var(--wb-field) !important;
+            color: var(--wb-ink) !important;
+        }}
+
+        .stApp :where(input, textarea),
+        .stApp [data-baseweb="select"] :where(div, span),
+        .stApp [data-testid="stMultiSelect"] :where(div, span),
+        .stApp [data-testid="stButtonGroup"] button {{
+            color: var(--wb-ink) !important;
+        }}
+
+        [data-baseweb="popover"] :where(div, span, p, label, li),
+        [data-testid="stPopoverBody"] :where(div, span, p, label, li),
+        [data-testid="stDialog"] :where(h1, h2, h3, h4, p, span, label, li) {{
+            color: var(--wb-ink) !important;
         }}
 
         .stApp::before,

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 import unittest
+from pathlib import Path
 from typing import ClassVar
 from unittest.mock import patch
 
@@ -332,6 +333,33 @@ class ThemeVariantTests(unittest.TestCase):
         self.assertIn("#F7F1E6", japanese)
         self.assertIn("#00F5FF", cyber)
         self.assertIn("2.75rem 2.75rem", cyber)
+
+    def test_each_theme_owns_its_box_colors(self) -> None:
+        expected_surfaces = {
+            "Light": ("#FFFFFF", "#F8FAFE"),
+            "Dark": ("#09152C", "#0B1933"),
+            "Japanese": ("#FFFDF8", "#FBF6EC"),
+            "Cyber": ("#080D19", "#071220"),
+        }
+        for theme, (surface, field) in expected_surfaces.items():
+            with self.subTest(theme=theme):
+                stylesheet = _render_stylesheet(theme)
+                self.assertIn(f"--wb-surface: {surface};", stylesheet)
+                self.assertIn(f"--wb-field: {field};", stylesheet)
+                self.assertIn(
+                    "background-color: var(--wb-surface) !important;",
+                    stylesheet,
+                )
+                self.assertIn(
+                    "background-color: var(--wb-field) !important;",
+                    stylesheet,
+                )
+
+    def test_shell_does_not_consult_streamlit_theme(self) -> None:
+        shell = (Path(__file__).resolve().parents[1] / "streamlit_app.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("st.context.theme", shell)
 
 
 class BottleAndPetInteractionTests(unittest.TestCase):
