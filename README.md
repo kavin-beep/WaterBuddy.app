@@ -1,37 +1,37 @@
 <div align="center">
 
-# 💧 Water Buddy
-streamlit app link: https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/
+![Water Buddy animated header](https://capsule-render.vercel.app/api?type=waving&color=0:0EA5E9,45:2563EB,100:7C3AED&height=230&section=header&text=Water%20Buddy&fontSize=64&fontColor=FFFFFF&animation=fadeIn&fontAlignY=36&desc=Every%20sip%20counts&descSize=22&descAlignY=58)
 
-### A playful, private hydration companion that makes every sip count.
+[![Launch Water Buddy](https://img.shields.io/badge/Launch_Water_Buddy-Live_App-0EA5E9?style=for-the-badge&logo=streamlit&logoColor=white)](https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/)
 
-[![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.60-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
-[![Tests](https://img.shields.io/badge/tests-120%20passing-22C55E)](#testing)
-[![Local First](https://img.shields.io/badge/data-local--first-06B6D4)](#privacy-by-design)
+[![Animated introduction](https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=22&duration=2800&pause=900&color=2563EB&center=true&vCenter=true&width=760&lines=Track+water.+Build+streaks.+Raise+FLOW.;A+playful%2C+private+hydration+companion.;No+API+key.+No+cloud+account.+Just+better+habits.)](https://git.io/typing-svg)
 
-**Track water. Build streaks. Raise FLOW. Feel better.**
+[![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Streamlit 1.60](https://img.shields.io/badge/Streamlit-1.60-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Tests](https://img.shields.io/badge/tests-130%20passing-22C55E?style=for-the-badge&logo=checkmarx&logoColor=white)](#testing)
+[![Local first](https://img.shields.io/badge/data-local--first-06B6D4?style=for-the-badge&logo=shield&logoColor=white)](#privacy-by-design)
+
+**Water Buddy turns hydration into a small daily adventure—with quick logging, useful insights, gentle reminders, achievements, and a virtual companion named FLOW.**
 
 </div>
 
-Water Buddy turns general age and occupation guidance into a practical daily goal, then keeps hydration engaging with instant logging, progress insights, achievements, reminders, and a growing virtual companion. It runs locally with no API key and keeps account and hydration data on your device.
+> [!NOTE]
+> FLOW uses a transparent offline coaching engine. The complete app works without an AI service, API key, or network connection.
 
-> FLOW uses a transparent offline coaching engine. The complete app works without an AI service or network connection.
+## ✨ Why Water Buddy?
 
-## ✨ What makes it special
-
-| | Experience |
-|---|---|
-| 🫊3 **Effortless tracking** | Customizable one-tap amounts, correction and deletion, undo, safe reset, and a 30-second Sip Guard against accidental duplicates |
-| 🎯 **Personal goals** | Age- and occupation-aware guidance with custom adjustments and manual overrides |
-| 💙 **FLOW hydration pet** | Hourly quotes, tips, and facts; moods, care actions, quests, evolution, 20 XP levels, and milestone outfits |
-| 📊 **Useful insights** | Consistent 7/14/30-day trends, adherence, streaks, calendar-week challenges, and fair scoring for new users |
+| Experience | What you get |
+|:--|:--|
+| 🫗 **Effortless tracking** | Four customizable one-tap amounts, custom entries, editing, deletion, undo, and safe reset |
+| 🎯 **Personal goals** | Age- and occupation-aware guidance, custom adjustments, and manual goal overrides |
+| 💙 **FLOW hydration pet** | Moods, care actions, daily quests, hourly messages, 20 XP levels, evolution, and milestone outfits |
+| 📊 **Useful insights** | 7/14/30-day trends, adherence, streaks, calendar-week challenges, and fair scoring for new users |
 | 🏆 **Motivation** | Eight canonical achievement badges, daily tips, live pace feedback, and goal celebrations |
-| 🔔 **Gentle reminders** | Configurable intervals, quiet hours, snooze/dismiss actions, and automatic rest after reaching the goal |
-| 🎨 **Made for you** | Responsive layout, Dark, Light, Japanese, and Cyber themes, animated page ambience, interface sounds, and metric or US fl oz display |
+| 🔔 **Gentle reminders** | Configurable intervals, quiet hours, snooze/dismiss actions, and automatic rest after reaching your goal |
+| 🎨 **Made for you** | Dark, Light, Japanese, and Cyber themes, responsive layouts, ambience, sounds, and metric or US fl oz display |
 | 🛡️ **Resilient storage** | Atomic JSON writes, last-known-good backups, corruption recovery, validated imports, and local export |
 
-## 🚀 Quick start
+## 🚀 Run locally
 
 Water Buddy requires **Python 3.12 or newer**.
 
@@ -59,14 +59,26 @@ python -m streamlit run streamlit_app.py
 
 </details>
 
+## ☁️ Deploy on Streamlit Community Cloud
+
+The repository is deployment-ready: `streamlit_app.py`, `requirements.txt`, and `.streamlit/config.toml` are all in the expected locations.
+
+1. Push this repository to GitHub.
+2. Sign in to [Streamlit Community Cloud](https://share.streamlit.io/).
+3. Select **Create app**, then choose this repository and branch.
+4. Set the main file path to `streamlit_app.py`.
+5. Open **Advanced settings**, select a supported Python version (3.12+), and deploy.
+
+No secrets are required. For public multi-user use, replace local JSON authentication/storage with managed identity and database services first.
+
 ## 🧭 App map
 
 ```text
 Welcome → Home → Log Water → Insights → Achievements
-                 ├─→ FLOW Pet
-                 ├─→ Coach
-                 ├─→ Reminders
-                 └─→ Profile & Preferences
+                 ├── FLOW Pet
+                 ├── Coach
+                 ├── Reminders
+                 └── Profile & Preferences
 ```
 
 ## 🏗️ Architecture
@@ -93,7 +105,7 @@ The `lib/` directory and `pubspec.yaml` are retained as references from the orig
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains **120 passing tests** covering authentication, per-user routing, logging and reward integrity, unit conversion, pet care, storage recovery, accessibility contracts, and every Streamlit page.
+The suite contains **130 passing tests** covering authentication, per-user routing, logging and reward integrity, unit conversion, pet care, storage recovery, accessibility contracts, and every Streamlit page.
 
 ## 🔐 Privacy by design
 
@@ -104,18 +116,19 @@ The current suite contains **120 passing tests** covering authentication, per-us
 - Imported backups are schema-checked and previewed before confirmation.
 - No API key, cloud account, analytics service, or external AI provider is required.
 
-This local account model is intended for private use on your own machine. Use managed identity and database services before deploying Water Buddy as a public multi-user application.
+> [!IMPORTANT]
+> This local account model is intended for private use on your own machine. Use managed identity and database services before deploying Water Buddy as a public multi-user application.
 
 ## ℹ️ Good to know
 
-- Reminders operate while the Water Buddy browser tab and local server are running.
+- Reminders operate while the Water Buddy browser tab and server are running.
 - Sip Guard prevents duplicate entries for 30 seconds without changing intake, XP, achievements, sounds, or saved data.
 - Water Buddy offers general wellness guidance, not medical advice. Personal needs can vary with health conditions, pregnancy, medications, weather, and clinician guidance.
-
----
 
 <div align="center">
 
 Made with 💧, Python, and Streamlit.
+
+![Water Buddy animated footer](https://capsule-render.vercel.app/api?type=waving&color=0:7C3AED,50:2563EB,100:0EA5E9&height=120&section=footer&animation=fadeIn)
 
 </div>
