@@ -1022,7 +1022,9 @@ def inject_global_styles(
 
         /* Text, number, date, time, and selection fields */
         .stApp [data-baseweb="input"],
+        .stApp [data-baseweb="base-input"],
         .stApp [data-baseweb="textarea"],
+        .stApp [data-baseweb="select"],
         .stApp [data-baseweb="select"] > div,
         .stApp [data-testid="stNumberInputContainer"],
         .stApp [data-testid="stDateInputField"],
@@ -1034,6 +1036,19 @@ def inject_global_styles(
             background: var(--wb-field) !important;
             color: var(--wb-ink) !important;
             box-shadow: inset 0 1px 0 color-mix(in srgb, #FFFFFF 5%, transparent);
+        }}
+
+        /* Base Web paints an extra inner layer in some Streamlit releases.
+           Color that layer too so dark-theme text never lands on a white box. */
+        .stApp [data-baseweb="input"] > div,
+        .stApp [data-baseweb="base-input"],
+        .stApp [data-baseweb="base-input"] > div,
+        .stApp [data-baseweb="textarea"] > div,
+        .stApp [data-baseweb="select"] > div,
+        .stApp [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+        .stApp [data-testid="stMultiSelect"] [data-baseweb="select"] > div {{
+            background-color: var(--wb-field) !important;
+            color: var(--wb-ink) !important;
         }}
 
         .stApp [data-baseweb="input"]:focus-within,
@@ -1048,8 +1063,20 @@ def inject_global_styles(
 
         .stApp input,
         .stApp textarea,
-        .stApp [data-baseweb="select"] span {{
+        .stApp [data-baseweb="select"] span,
+        .stApp [data-baseweb="select"] p {{
+            background-color: transparent !important;
             color: var(--wb-ink) !important;
+            -webkit-text-fill-color: var(--wb-ink) !important;
+            font-weight: 600;
+            caret-color: var(--wb-cyan);
+        }}
+
+        .stApp input:-webkit-autofill,
+        .stApp input:-webkit-autofill:hover,
+        .stApp input:-webkit-autofill:focus {{
+            -webkit-box-shadow: 0 0 0 1000px var(--wb-field) inset !important;
+            -webkit-text-fill-color: var(--wb-ink) !important;
             caret-color: var(--wb-cyan);
         }}
 

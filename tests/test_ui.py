@@ -354,6 +354,11 @@ class ThemeVariantTests(unittest.TestCase):
                     "background-color: var(--wb-field) !important;",
                     stylesheet,
                 )
+                self.assertIn(
+                    "-webkit-text-fill-color: var(--wb-ink) !important;",
+                    stylesheet,
+                )
+                self.assertIn('[data-baseweb="base-input"]', stylesheet)
 
     def test_shell_does_not_consult_streamlit_theme(self) -> None:
         shell = (Path(__file__).resolve().parents[1] / "streamlit_app.py").read_text(
