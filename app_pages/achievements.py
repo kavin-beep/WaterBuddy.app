@@ -134,7 +134,6 @@ with unlocked_tab:
                     render_badge_card(
                         badge["title"],
                         badge["description"],
-                        badge["icon"],
                         True,
                         badge["accent"],
                     )
@@ -153,7 +152,6 @@ with locked_tab:
                     render_badge_card(
                         badge["title"],
                         badge["description"],
-                        badge["icon"],
                         False,
                         badge["accent"],
                     )

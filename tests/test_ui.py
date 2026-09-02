@@ -11,6 +11,7 @@ from unittest.mock import patch
 from water_buddy.ui import (
     inject_global_styles,
     mount_page_ambience,
+    render_badge_card,
     render_bottle,
     render_pet,
 )
@@ -386,6 +387,22 @@ class BottleAndPetInteractionTests(unittest.TestCase):
         self.assertIn('class="wb-pet__tap-target"', markup)
         self.assertIn('aria-label="Pet Ripple for a happy reaction"', markup)
         self.assertIn("Boop! You found my happy dance.", markup)
+
+
+class AchievementCardTests(unittest.TestCase):
+    def test_achievement_card_has_no_badge_icon(self) -> None:
+        with patch("water_buddy.ui.st.html") as html:
+            render_badge_card(
+                "First sip",
+                "Log your first drink.",
+                True,
+                "#2DD4BF",
+            )
+
+        markup = html.call_args.args[0]
+        self.assertNotIn("wb-badge-card__icon", markup)
+        self.assertIn("First sip", markup)
+        self.assertIn("Unlocked", markup)
 
 
 class PetCostumeRenderTests(unittest.TestCase):

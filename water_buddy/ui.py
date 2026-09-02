@@ -1627,7 +1627,6 @@ def inject_global_styles(
         .wb-page-intro__badge::before,
         .wb-mascot__status-dot,
         .wb-pet__stage::before,
-        .wb-badge-card__icon,
         .wb-empty-state__icon {{
             flex: 0 0 auto;
         }}
@@ -3420,7 +3419,7 @@ def inject_global_styles(
         .wb-badge-card {{
             --wb-badge-accent: #2DD4BF;
             position: relative;
-            min-height: 13.2rem;
+            min-height: 10.5rem;
             padding: 1.35rem;
             overflow: hidden;
             border: 1px solid color-mix(in srgb, var(--wb-badge-accent) 25%, var(--wb-line));
@@ -3441,24 +3440,8 @@ def inject_global_styles(
         .wb-badge-card__top {{
             display: flex;
             align-items: flex-start;
-            justify-content: space-between;
+            justify-content: flex-end;
             gap: 1rem;
-        }}
-
-        .wb-badge-card__icon {{
-            flex: 0 0 auto;
-            display: grid;
-            place-items: center;
-            width: 3.1rem;
-            height: 3.1rem;
-            border: 1px solid color-mix(in srgb, var(--wb-badge-accent) 40%, transparent);
-            border-radius: 1rem;
-            background: color-mix(in srgb, var(--wb-badge-accent) 15%, var(--wb-surface));
-            color: var(--wb-badge-accent);
-            box-shadow: 0 10px 28px color-mix(in srgb, var(--wb-badge-accent) 18%, transparent),
-                inset 0 1px 0 rgba(255,255,255,.2);
-            font-size: 1.55rem;
-            overflow: hidden;
         }}
 
         .wb-badge-card__state {{
@@ -3493,14 +3476,6 @@ def inject_global_styles(
         .wb-badge-card--locked {{
             border-color: var(--wb-line);
             background: color-mix(in srgb, var(--wb-surface) 66%, transparent);
-        }}
-
-        .wb-badge-card--locked .wb-badge-card__icon {{
-            border-color: var(--wb-line);
-            background: color-mix(in srgb, var(--wb-ink) 6%, transparent);
-            color: var(--wb-muted);
-            filter: grayscale(1);
-            box-shadow: none;
         }}
 
         .wb-badge-card--locked .wb-badge-card__title,
@@ -4447,7 +4422,6 @@ def render_bottle(
 def render_badge_card(
     title: str,
     description: str,
-    icon: str,
     unlocked: bool,
     accent: str = "#2DD4BF",
 ) -> None:
@@ -4455,7 +4429,6 @@ def render_badge_card(
 
     safe_title = _escape(title)
     safe_description = _escape(description)
-    safe_icon = _escape(icon)
     safe_accent = _safe_color(accent)
     modifier = "" if unlocked else " wb-badge-card--locked"
     state_icon = "verified" if unlocked else "lock"
@@ -4468,7 +4441,6 @@ def render_badge_card(
         <article class="wb-badge-card{modifier}" style="--wb-badge-accent: {safe_accent}"
             aria-label="{safe_title}, {safe_state_label}">
             <div class="wb-badge-card__top">
-                <span class="wb-badge-card__icon material-symbols-rounded" aria-hidden="true">{safe_icon}</span>
                 <span class="wb-badge-card__state">
                     <span class="material-symbols-rounded" aria-hidden="true">{safe_state_icon}</span>
                     {safe_state_label}
