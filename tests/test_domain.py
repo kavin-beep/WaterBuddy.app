@@ -14,6 +14,7 @@ from water_buddy.domain import (
     APP_ID,
     DEFAULT_QUICK_LOG_AMOUNTS_ML,
     SCHEMA_VERSION,
+    THEME_OPTIONS,
     WATER_LOG_COOLDOWN_SECONDS,
     WaterLogCooldownError,
     add_water,
@@ -27,6 +28,7 @@ from water_buddy.domain import (
     history_rows,
     hydration_score,
     normalize_state,
+    normalize_theme,
     progress_summary,
     reminder_is_due,
     reset_day,
@@ -94,6 +96,20 @@ class GoalTests(unittest.TestCase):
 
 
 class SchemaTests(unittest.TestCase):
+    def test_all_display_themes_survive_normalization(self) -> None:
+        self.assertEqual(THEME_OPTIONS, ("Dark", "Light", "Japanese", "Cyber"))
+        for theme in THEME_OPTIONS:
+            with self.subTest(theme=theme):
+                state = default_state(datetime(2026, 8, 7, 9, 30))
+                state["preferences"]["theme"] = theme.lower()
+                self.assertEqual(normalize_theme(theme.lower()), theme)
+                self.assertEqual(
+                    normalize_state(state)["preferences"]["theme"],
+                    theme,
+                )
+
+        self.assertEqual(normalize_theme("unknown"), "Dark")
+
     def test_schema_v4_identifies_water_buddy_documents(self) -> None:
         state = default_state(datetime(2026, 8, 7, 9, 30))
 

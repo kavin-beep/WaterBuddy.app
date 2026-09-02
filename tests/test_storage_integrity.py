@@ -5,15 +5,36 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
 
-from water_buddy.domain import default_state
+from water_buddy.domain import add_water, default_state, progress_summary
 from water_buddy.storage import JsonStore, StorageError
 
 
 class JsonStoreIntegrityTests(unittest.TestCase):
+    def test_completed_goal_stays_complete_after_more_water_and_reload(self) -> None:
+        goal_time = datetime(2026, 8, 21, 8, 0, tzinfo=timezone.utc)
+        extra_time = goal_time + timedelta(minutes=1)
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            store = JsonStore(Path(temporary_directory) / "water_buddy.json")
+            data = default_state(goal_time)
+            goal_ml = progress_summary(data, now=goal_time)["goal_ml"]
+
+            completed = add_water(data, goal_ml, now=goal_time)
+            completed_at = completed["completed_at"]
+            store.save(data)
+
+            reloaded = store.load()
+            add_water(reloaded, 250, now=extra_time)
+            store.save(reloaded)
+            final = progress_summary(store.load(), now=extra_time)
+
+            self.assertGreater(final["progress"], 1)
+            self.assertTrue(final["goal_met"])
+            self.assertEqual(final["completed_at"], completed_at)
+
     def test_successful_save_refreshes_and_synchronizes_normalized_state(
         self,
     ) -> None:

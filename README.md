@@ -28,7 +28,7 @@ Water Buddy turns general age and occupation guidance into a practical daily goa
 | 📊 **Useful insights** | Consistent 7/14/30-day trends, adherence, streaks, calendar-week challenges, and fair scoring for new users |
 | 🏆 **Motivation** | Eight canonical achievement badges, daily tips, live pace feedback, and goal celebrations |
 | 🔔 **Gentle reminders** | Configurable intervals, quiet hours, snooze/dismiss actions, and automatic rest after reaching the goal |
-| 🎨 **Made for you** | Responsive layout, dark/light themes, animated page ambience, interface sounds, and metric or US fl oz display |
+| 🎨 **Made for you** | Responsive layout, Dark, Light, Japanese, and Cyber themes, animated page ambience, interface sounds, and metric or US fl oz display |
 | 🛡️ **Resilient storage** | Atomic JSON writes, last-known-good backups, corruption recovery, validated imports, and local export |
 
 ## 🚀 Quick start

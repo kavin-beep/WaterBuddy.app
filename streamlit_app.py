@@ -15,6 +15,7 @@ from water_buddy.domain import (
     WaterLogCooldownError,
     add_water,
     dismiss_reminder,
+    normalize_theme,
     progress_summary,
     reminder_is_due,
     snooze_reminder,
@@ -326,13 +327,8 @@ preferences = (
     else {}
 )
 preferences = preferences if isinstance(preferences, Mapping) else {}
-theme = (
-    "Light"
-    if str(
-        preferences.get("theme", st.context.theme.type or "Dark")
-    ).casefold()
-    == "light"
-    else "Dark"
+theme = normalize_theme(
+    preferences.get("theme", st.context.theme.type or "Dark")
 )
 background_motion = bool(preferences.get("background_motion", True))
 sound_enabled = bool(preferences.get("sound_enabled", True))

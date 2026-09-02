@@ -39,8 +39,13 @@ def _escape(value: object) -> str:
     return html.escape(str(value), quote=True)
 
 
-def _percent(progress: float) -> float:
-    """Normalize either a ratio (0..1) or percentage (0..100)."""
+def _percent(progress: float, *, ratio_hint: bool = False) -> float:
+    """Normalize a ratio or percentage without dropping over-goal progress.
+
+    Hydration ratios can legitimately rise above ``1`` after the daily goal is
+    complete.  ``ratio_hint`` keeps values such as ``1.25`` at a full 100%
+    instead of misreading them as 1.25 percent.
+    """
 
     try:
         value = float(progress)
@@ -48,7 +53,7 @@ def _percent(progress: float) -> float:
         return 0.0
     if not math.isfinite(value):
         return 0.0
-    if 0.0 <= value <= 1.0:
+    if 0.0 <= value <= (5.0 if ratio_hint else 1.0):
         value *= 100.0
     return min(100.0, max(0.0, value))
 
@@ -83,7 +88,7 @@ def inject_global_styles(
     state cue. The defaults keep existing zero- and one-argument calls valid.
     """
 
-    mode = "light" if str(theme).strip().casefold() == "light" else "dark"
+    requested_theme = str(theme).strip().casefold()
     palettes = {
         "dark": {
             "background": "#030817",
@@ -91,15 +96,19 @@ def inject_global_styles(
             "elevated": "#0E1D39",
             "field": "#0B1933",
             "overlay": "#071329F2",
-            "text": "#F3F7FF",
+            "text": "#FFFFFF",
             "muted": "#A4B5CE",
             "line": "#233657",
             "soft_line": "#182A49",
             "primary": "#2856D8",
+            "royal": "#3157F6",
+            "action_end": "#0E7490",
             "cyan": "#38D9F2",
             "aqua": "#2DD4BF",
             "violet": "#8B7CF6",
             "shadow": "#01040C",
+            "scheme": "dark",
+            "background_size": "auto",
         },
         "light": {
             "background": "#F5F8FE",
@@ -112,14 +121,80 @@ def inject_global_styles(
             "line": "#C9D7EA",
             "soft_line": "#DDE6F2",
             "primary": "#1D4ED8",
+            "royal": "#3157F6",
+            "action_end": "#0E7490",
             "cyan": "#0891B2",
             "aqua": "#0F766E",
             "violet": "#6D28D9",
             "shadow": "#5B6F91",
+            "scheme": "light",
+            "background_size": "auto",
+        },
+        "japanese": {
+            "background": "#F7F1E6",
+            "surface": "#FFFDF8",
+            "elevated": "#EFE5D5",
+            "field": "#FBF6EC",
+            "overlay": "#FFFDF8F2",
+            "text": "#211A17",
+            "muted": "#665A50",
+            "line": "#D8C9B8",
+            "soft_line": "#E8DDCF",
+            "primary": "#B4232E",
+            "royal": "#7E1822",
+            "action_end": "#3F7255",
+            "cyan": "#B4232E",
+            "aqua": "#3F7255",
+            "violet": "#78516F",
+            "shadow": "#5A4337",
+            "scheme": "light",
+            "background_size": "auto",
+        },
+        "cyber": {
+            "background": "#02040B",
+            "surface": "#080D19",
+            "elevated": "#10192C",
+            "field": "#071220",
+            "overlay": "#050A14F2",
+            "text": "#FFFFFF",
+            "muted": "#AFBDD3",
+            "line": "#2A3B5E",
+            "soft_line": "#182741",
+            "primary": "#7C3AED",
+            "royal": "#D91B8C",
+            "action_end": "#007C91",
+            "cyan": "#00F5FF",
+            "aqua": "#39FF9C",
+            "violet": "#FF3DF2",
+            "shadow": "#000000",
+            "scheme": "dark",
+            "background_size": "2.75rem 2.75rem, 2.75rem 2.75rem, auto, auto, auto",
         },
     }
+    mode = requested_theme if requested_theme in palettes else "dark"
     palette = palettes[mode]
-    color_scheme = "light" if mode == "light" else "dark"
+    color_scheme = palette["scheme"]
+    if mode == "japanese":
+        app_background = """
+            radial-gradient(circle at 88% 10%, color-mix(in srgb, #C93643 18%, transparent) 0 5rem, transparent 5.1rem),
+            repeating-linear-gradient(135deg, transparent 0 3rem, color-mix(in srgb, #8F5B43 4%, transparent) 3.05rem 3.1rem),
+            radial-gradient(circle at 10% -8%, color-mix(in srgb, var(--wb-blue) 12%, transparent), transparent 31rem),
+            radial-gradient(circle at 93% 8%, color-mix(in srgb, var(--wb-aqua) 10%, transparent), transparent 26rem)
+        """
+    elif mode == "cyber":
+        app_background = """
+            linear-gradient(color-mix(in srgb, var(--wb-cyan) 7%, transparent) 1px, transparent 1px),
+            linear-gradient(90deg, color-mix(in srgb, var(--wb-violet) 6%, transparent) 1px, transparent 1px),
+            radial-gradient(circle at 10% -8%, color-mix(in srgb, var(--wb-violet) 25%, transparent), transparent 31rem),
+            radial-gradient(circle at 93% 8%, color-mix(in srgb, var(--wb-cyan) 19%, transparent), transparent 26rem),
+            radial-gradient(circle at 52% 112%, color-mix(in srgb, var(--wb-aqua) 10%, transparent), transparent 30rem)
+        """
+    else:
+        app_background = """
+            radial-gradient(circle at 10% -8%, color-mix(in srgb, var(--wb-blue) 18%, transparent), transparent 31rem),
+            radial-gradient(circle at 93% 8%, color-mix(in srgb, var(--wb-cyan) 13%, transparent), transparent 26rem),
+            radial-gradient(circle at 52% 112%, color-mix(in srgb, var(--wb-violet) 9%, transparent), transparent 30rem)
+        """
     motion_override = "" if bool(motion_enabled) else """
         .stApp::before,
         .stApp::after,
@@ -155,7 +230,8 @@ def inject_global_styles(
             --wb-cyan: {palette["cyan"]};
             --wb-aqua: {palette["aqua"]};
             --wb-blue: {palette["primary"]};
-            --wb-royal: #3157F6;
+            --wb-royal: {palette["royal"]};
+            --wb-action-end: {palette["action_end"]};
             --wb-violet: {palette["violet"]};
             --wb-route-primary: var(--wb-cyan);
             --wb-route-secondary: var(--wb-blue);
@@ -187,11 +263,8 @@ def inject_global_styles(
             position: relative;
             isolation: isolate;
             min-height: 100vh;
-            background:
-                radial-gradient(circle at 10% -8%, color-mix(in srgb, var(--wb-blue) 18%, transparent), transparent 31rem),
-                radial-gradient(circle at 93% 8%, color-mix(in srgb, var(--wb-cyan) 13%, transparent), transparent 26rem),
-                radial-gradient(circle at 52% 112%, color-mix(in srgb, var(--wb-violet) 9%, transparent), transparent 30rem),
-                var(--wb-bg) !important;
+            background: {app_background}, var(--wb-bg) !important;
+            background-size: {palette["background_size"]};
             color: var(--wb-ink);
         }}
 
@@ -702,7 +775,7 @@ def inject_global_styles(
 
         .stApp button[kind="primary"],
         .stApp button[data-testid="stBaseButton-primary"] {{
-            background: linear-gradient(125deg, var(--wb-blue), var(--wb-royal) 55%, #0E7490);
+            background: linear-gradient(125deg, var(--wb-blue), var(--wb-royal) 55%, var(--wb-action-end));
             border: 1px solid color-mix(in srgb, #FFFFFF 22%, transparent);
             color: #FFFFFF;
         }}
@@ -835,7 +908,7 @@ def inject_global_styles(
             background: linear-gradient(130deg,
                 var(--wb-blue),
                 var(--wb-royal) 55%,
-                #0E7490) !important;
+                var(--wb-action-end)) !important;
             color: #FFFFFF !important;
             box-shadow: 0 7px 20px color-mix(in srgb, var(--wb-blue) 30%, transparent);
         }}
@@ -2206,6 +2279,61 @@ def inject_global_styles(
             transform: translateX(-50%);
         }}
 
+        .wb-pet__tap-target {{
+            position: absolute;
+            z-index: 2;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            border-radius: 48%;
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }}
+
+        .wb-pet__tap-target:focus-visible {{
+            outline: 3px solid var(--wb-cyan);
+            outline-offset: .3rem;
+        }}
+
+        .wb-pet__tap-target:is(:hover, :focus) .wb-pet__character {{
+            filter: saturate(1.16) brightness(1.06);
+        }}
+
+        .wb-pet__tap-target:focus .wb-pet__character {{
+            animation: wb-pet-boop .9s cubic-bezier(.2,.8,.2,1) both;
+        }}
+
+        .wb-pet__tap-target:active .wb-pet__character {{
+            scale: .94 1.04;
+        }}
+
+        .wb-pet__speech {{
+            transition: opacity 180ms ease, visibility 180ms ease, transform 180ms ease;
+        }}
+
+        .wb-pet__speech--tap {{
+            visibility: hidden;
+            opacity: 0;
+            animation: none;
+            transform: translateY(.35rem) scale(.96);
+        }}
+
+        .wb-pet:has(.wb-pet__tap-target:focus) .wb-pet__speech--default {{
+            visibility: hidden;
+            opacity: 0;
+        }}
+
+        .wb-pet:has(.wb-pet__tap-target:focus) .wb-pet__speech--tap {{
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }}
+
         .wb-pet__aura {{
             position: absolute;
             z-index: -1;
@@ -3160,6 +3288,34 @@ def inject_global_styles(
 
         .wb-bottle__percent strong {{ color: var(--wb-ink); }}
 
+        .wb-bottle__goal-seal {{
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            margin-top: .8rem;
+            padding: .48rem .7rem;
+            border: 1px solid color-mix(in srgb, var(--wb-aqua) 42%, var(--wb-line));
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--wb-aqua) 12%, var(--wb-surface));
+            color: var(--wb-ink);
+            font-size: .72rem;
+            font-weight: 820;
+        }}
+
+        .wb-bottle-card--complete {{
+            border-color: color-mix(in srgb, var(--wb-aqua) 55%, var(--wb-line));
+            box-shadow: var(--wb-shadow), 0 0 2.8rem color-mix(in srgb, var(--wb-aqua) 15%, transparent);
+        }}
+
+        .wb-bottle-card--complete .wb-bottle__liquid {{
+            height: 100% !important;
+            transition: none;
+        }}
+
+        .wb-bottle-card--complete .wb-bottle__shell {{
+            animation: wb-bottle-complete-pulse 2.8s ease-in-out infinite;
+        }}
+
         /* ---------- Achievement badge ---------- */
         .wb-badge-card {{
             --wb-badge-accent: #2DD4BF;
@@ -3491,6 +3647,12 @@ def inject_global_styles(
             0%, 100% {{ translate: 0 .15rem; rotate: -1.2deg; }}
             50% {{ translate: 0 -.55rem; rotate: 1.2deg; }}
         }}
+        @keyframes wb-pet-boop {{
+            0%, 100% {{ translate: 0 .1rem; rotate: 0; scale: 1; }}
+            24% {{ translate: 0 -.75rem; rotate: -5deg; scale: 1.04 .96; }}
+            48% {{ translate: 0 -.2rem; rotate: 5deg; scale: .97 1.04; }}
+            72% {{ translate: 0 -.6rem; rotate: -2deg; scale: 1.02 .98; }}
+        }}
         @keyframes wb-pet-blink {{
             0%, 42%, 46%, 76%, 80%, 100% {{ transform: scaleY(1); }}
             44%, 78% {{ transform: scaleY(.07); }}
@@ -3537,6 +3699,10 @@ def inject_global_styles(
         @keyframes wb-pet-star {{
             0%, 100% {{ transform: translateX(-50%) rotate(-8deg) scale(.94); }}
             50% {{ transform: translateX(-50%) rotate(8deg) scale(1.08); }}
+        }}
+        @keyframes wb-bottle-complete-pulse {{
+            0%, 100% {{ filter: saturate(1); transform: translateY(0); }}
+            50% {{ filter: saturate(1.16) brightness(1.05); transform: translateY(-.18rem); }}
         }}
         @keyframes wb-samurai-glint {{
             0%, 64%, 100% {{ filter: brightness(1); opacity: .82; }}
@@ -3762,7 +3928,7 @@ def render_mascot(
     (100%).
     """
 
-    percent = _percent(progress)
+    percent = _percent(progress, ratio_hint=True)
     if percent < 25:
         state = "thirsty"
         status = "Needs a little water"
@@ -3882,7 +4048,7 @@ def render_pet(
         xp_goal = max(1, xp + integer_value("xp_to_next_level", default=0))
     raw_xp_progress = first_value("xp_progress", "level_progress", default=None)
     xp_percent = (
-        _percent(raw_xp_progress)
+        _percent(raw_xp_progress, ratio_hint=True)
         if raw_xp_progress is not None
         else min(100.0, max(0.0, xp / xp_goal * 100.0))
     )
@@ -3890,7 +4056,7 @@ def render_pet(
     happiness = _percent(
         first_value("happiness", "happy", "happiness_percent", default=75)
     )
-    hydration = _percent(hydration_progress)
+    hydration = _percent(hydration_progress, ratio_hint=True)
 
     raw_stage = first_value(
         "stage",
@@ -4021,10 +4187,13 @@ def render_pet(
                 <span class="wb-pet__bubble wb-pet__bubble--one" aria-hidden="true"></span>
                 <span class="wb-pet__bubble wb-pet__bubble--two" aria-hidden="true"></span>
                 <span class="wb-pet__bubble wb-pet__bubble--three" aria-hidden="true"></span>
-                <span class="wb-pet__speech">{safe_speech}</span>
-                <div class="wb-pet__character-wrap" aria-hidden="true">
+                <span class="wb-pet__speech wb-pet__speech--default">{safe_speech}</span>
+                <span class="wb-pet__speech wb-pet__speech--tap">Boop! You found my happy dance.</span>
+                <div class="wb-pet__character-wrap">
                     <span class="wb-pet__aura"></span>
-                    <div class="wb-pet__character">
+                    <button class="wb-pet__tap-target" type="button"
+                        aria-label="Pet {safe_name} for a happy reaction">
+                    <div class="wb-pet__character" aria-hidden="true">
                         <span class="wb-pet__crest"></span>
                         <span class="wb-pet__tip"></span>
                         <div class="wb-pet__body">
@@ -4043,6 +4212,7 @@ def render_pet(
                             </span>
                         </div>
                     </div>
+                    </button>
                 </div>
             </div>
             <aside class="wb-pet__panel" data-compact-meta="{compact_meta}">
@@ -4095,7 +4265,7 @@ def render_bottle(
 ) -> None:
     """Render an animated bottle with current intake and goal details."""
 
-    percent = _percent(progress)
+    percent = _percent(progress, ratio_hint=True)
     try:
         intake = max(0, int(intake_ml))
     except (TypeError, ValueError):
@@ -4106,6 +4276,7 @@ def render_bottle(
         goal = 0
 
     remaining = max(0, goal - intake)
+    is_complete = bool(goal and intake >= goal)
     safe_intake = _escape(format_volume(intake, units))
     safe_goal = _escape(format_volume(goal, units))
     safe_percent = _escape(f"{percent:.0f}")
@@ -4116,10 +4287,17 @@ def render_bottle(
     else:
         detail = "Set a daily goal to personalize this bottle"
     safe_detail = _escape(detail)
+    completion_class = " wb-bottle-card--complete" if is_complete else ""
+    completion_badge = (
+        '<span class="wb-bottle__goal-seal" aria-label="Daily goal is saved as complete">'
+        '&#10003; Goal locked in</span>'
+        if is_complete
+        else ""
+    )
 
     st.html(
         f"""
-        <section class="wb-bottle-card" aria-label="Daily water progress">
+        <section class="wb-bottle-card{completion_class}" aria-label="Daily water progress">
             <div class="wb-bottle__visual" aria-hidden="true">
                 <span class="wb-bottle__cap"></span>
                 <span class="wb-bottle__neck"></span>
@@ -4130,6 +4308,7 @@ def render_bottle(
                     <span class="wb-bottle__mark wb-bottle__mark--75"></span>
                     <span class="wb-bottle__liquid" style="--wb-level: {percent:.2f}%"></span>
                 </div>
+                {completion_badge}
             </div>
             <div class="wb-bottle__copy">
                 <p class="wb-bottle__eyebrow">Today’s water</p>

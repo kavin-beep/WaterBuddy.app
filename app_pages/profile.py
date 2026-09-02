@@ -11,8 +11,10 @@ from water_buddy.domain import (
     AGE_GOALS,
     DEFAULT_QUICK_LOG_AMOUNTS_ML,
     OCCUPATION_ADJUSTMENTS,
+    THEME_OPTIONS,
     calculate_goal,
     default_state,
+    normalize_theme,
     set_daily_goal,
     validate_backup_payload,
 )
@@ -27,7 +29,6 @@ from water_buddy.units import (
 
 mount_page_ambience("profile")
 
-THEME_OPTIONS = ("Dark", "Light")
 SOUND_VOLUME_OPTIONS = ("Soft", "Balanced", "Vivid")
 QUICK_LOG_OPTIONS = (150, 200, 250, 300, 350, 500, 750, 1000)
 PENDING_RESTORE_KEY = "pending_water_buddy_restore"
@@ -282,11 +283,7 @@ defaults = {
     ),
     "profile_wake_time": _parse_time(profile.get("wake_time"), time(7, 0)),
     "profile_sleep_time": _parse_time(profile.get("sleep_time"), time(22, 0)),
-    "profile_theme": (
-        "Light"
-        if str(preferences.get("theme", "Dark")).casefold() == "light"
-        else "Dark"
-    ),
+    "profile_theme": normalize_theme(preferences.get("theme", "Dark")),
     "profile_background_motion": bool(preferences.get("background_motion", True)),
     "profile_units": initial_units,
     "profile_sound_enabled": bool(preferences.get("sound_enabled", True)),

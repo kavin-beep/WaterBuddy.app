@@ -21,6 +21,7 @@ APP_ID = "water_buddy"
 SCHEMA_VERSION = 4
 WATER_LOG_COOLDOWN_SECONDS = 30
 DEFAULT_QUICK_LOG_AMOUNTS_ML: tuple[int, int, int, int] = (250, 500, 750, 1000)
+THEME_OPTIONS = ("Dark", "Light", "Japanese", "Cyber")
 
 __all__ = (
     "AGE_GOALS",
@@ -28,6 +29,7 @@ __all__ = (
     "DEFAULT_QUICK_LOG_AMOUNTS_ML",
     "OCCUPATION_ADJUSTMENTS",
     "SCHEMA_VERSION",
+    "THEME_OPTIONS",
     "WATER_LOG_COOLDOWN_SECONDS",
     "WaterLogCooldownError",
     "add_water",
@@ -42,6 +44,7 @@ __all__ = (
     "history_rows",
     "hydration_score",
     "normalize_state",
+    "normalize_theme",
     "progress_summary",
     "reminder_is_due",
     "reset_day",
@@ -344,6 +347,16 @@ def calculate_goal(
     return max(500, min(8000, AGE_GOALS[age_key] + adjustment))
 
 
+def normalize_theme(value: object) -> str:
+    """Return a supported display theme while preserving older profiles."""
+
+    candidate = str(value).strip().casefold()
+    return next(
+        (theme for theme in THEME_OPTIONS if theme.casefold() == candidate),
+        "Dark",
+    )
+
+
 def default_state(now: datetime | None = None) -> dict[str, Any]:
     """Return a new, fully initialized Water Buddy state dictionary."""
 
@@ -485,11 +498,7 @@ def normalize_state(data: Any, now: datetime | None = None) -> dict[str, Any]:
     }.get(raw_volume, "Balanced")
     preferences.update(
         {
-            "theme": (
-                "Light"
-                if str(raw_preferences.get("theme", "Dark")).casefold() == "light"
-                else "Dark"
-            ),
+            "theme": normalize_theme(raw_preferences.get("theme", "Dark")),
             "background_motion": _safe_bool(
                 raw_preferences.get("background_motion"),
                 True,

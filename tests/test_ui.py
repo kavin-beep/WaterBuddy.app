@@ -10,6 +10,7 @@ from unittest.mock import patch
 from water_buddy.ui import (
     inject_global_styles,
     mount_page_ambience,
+    render_bottle,
     render_pet,
 )
 
@@ -310,6 +311,47 @@ class ResponsiveContainmentTests(unittest.TestCase):
         self.assertIn("white-space: normal !important", stylesheet)
         self.assertIn("@container (max-width: 36rem)", stylesheet)
         self.assertIn("grid-template-columns: minmax(0, 1fr)", stylesheet)
+
+
+class ThemeVariantTests(unittest.TestCase):
+    def test_light_modes_use_dark_text_and_dark_modes_use_white_text(self) -> None:
+        expected = {
+            "Light": "--wb-ink: #10213D;",
+            "Japanese": "--wb-ink: #211A17;",
+            "Dark": "--wb-ink: #FFFFFF;",
+            "Cyber": "--wb-ink: #FFFFFF;",
+        }
+        for theme, token in expected.items():
+            with self.subTest(theme=theme):
+                self.assertIn(token, _render_stylesheet(theme))
+
+    def test_japanese_and_cyber_have_distinct_visual_signatures(self) -> None:
+        japanese = _render_stylesheet("Japanese")
+        cyber = _render_stylesheet("Cyber")
+        self.assertIn("#B4232E", japanese)
+        self.assertIn("#F7F1E6", japanese)
+        self.assertIn("#00F5FF", cyber)
+        self.assertIn("2.75rem 2.75rem", cyber)
+
+
+class BottleAndPetInteractionTests(unittest.TestCase):
+    def test_over_goal_bottle_remains_full_and_complete(self) -> None:
+        with patch("water_buddy.ui.st.html") as html:
+            render_bottle(1.25, 2750, 2200)
+
+        markup = html.call_args.args[0]
+        self.assertIn("wb-bottle-card--complete", markup)
+        self.assertIn("--wb-level: 100.00%", markup)
+        self.assertIn("Goal locked in", markup)
+
+    def test_pet_character_is_keyboard_clickable_and_reacts(self) -> None:
+        with patch("water_buddy.ui.st.html") as html:
+            render_pet({"name": "Ripple"}, 0.75)
+
+        markup = html.call_args.args[0]
+        self.assertIn('class="wb-pet__tap-target"', markup)
+        self.assertIn('aria-label="Pet Ripple for a happy reaction"', markup)
+        self.assertIn("Boop! You found my happy dance.", markup)
 
 
 class PetCostumeRenderTests(unittest.TestCase):
