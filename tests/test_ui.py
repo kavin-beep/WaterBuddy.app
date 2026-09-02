@@ -337,16 +337,17 @@ class ThemeVariantTests(unittest.TestCase):
 
     def test_each_theme_owns_its_box_colors(self) -> None:
         expected_surfaces = {
-            "Light": ("#FFFFFF", "#F8FAFE"),
-            "Dark": ("#09152C", "#FFFFFF"),
-            "Japanese": ("#FFFDF8", "#FBF6EC"),
-            "Cyber": ("#080D19", "#FFFFFF"),
+            "Light": ("#FFFFFF", "#FFFFFF", "#000000"),
+            "Dark": ("#09152C", "#000000", "#FFFFFF"),
+            "Japanese": ("#FFFDF8", "#FFFFFF", "#000000"),
+            "Cyber": ("#080D19", "#000000", "#FFFFFF"),
         }
-        for theme, (surface, field) in expected_surfaces.items():
+        for theme, (surface, field, field_text) in expected_surfaces.items():
             with self.subTest(theme=theme):
                 stylesheet = _render_stylesheet(theme)
                 self.assertIn(f"--wb-surface: {surface};", stylesheet)
                 self.assertIn(f"--wb-field: {field};", stylesheet)
+                self.assertIn(f"--wb-field-ink: {field_text};", stylesheet)
                 self.assertIn(
                     "background-color: var(--wb-surface) !important;",
                     stylesheet,

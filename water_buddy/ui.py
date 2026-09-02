@@ -95,9 +95,9 @@ def inject_global_styles(
             "background": "#030817",
             "surface": "#09152C",
             "elevated": "#0E1D39",
-            "field": "#FFFFFF",
-            "field_text": "#10213D",
-            "field_muted": "#526780",
+            "field": "#000000",
+            "field_text": "#FFFFFF",
+            "field_muted": "#A4B5CE",
             "overlay": "#071329F2",
             "text": "#FFFFFF",
             "muted": "#A4B5CE",
@@ -117,8 +117,8 @@ def inject_global_styles(
             "background": "#F5F8FE",
             "surface": "#FFFFFF",
             "elevated": "#EDF3FC",
-            "field": "#F8FAFE",
-            "field_text": "#10213D",
+            "field": "#FFFFFF",
+            "field_text": "#000000",
             "field_muted": "#526780",
             "overlay": "#FFFFFFF2",
             "text": "#10213D",
@@ -139,8 +139,8 @@ def inject_global_styles(
             "background": "#F7F1E6",
             "surface": "#FFFDF8",
             "elevated": "#EFE5D5",
-            "field": "#FBF6EC",
-            "field_text": "#211A17",
+            "field": "#FFFFFF",
+            "field_text": "#000000",
             "field_muted": "#665A50",
             "overlay": "#FFFDF8F2",
             "text": "#211A17",
@@ -161,9 +161,9 @@ def inject_global_styles(
             "background": "#02040B",
             "surface": "#080D19",
             "elevated": "#10192C",
-            "field": "#FFFFFF",
-            "field_text": "#10213D",
-            "field_muted": "#526780",
+            "field": "#000000",
+            "field_text": "#FFFFFF",
+            "field_muted": "#AFBDD3",
             "overlay": "#050A14F2",
             "text": "#FFFFFF",
             "muted": "#AFBDD3",
@@ -324,14 +324,14 @@ def inject_global_styles(
         ) {{
             border-color: var(--wb-line) !important;
             background-color: var(--wb-field) !important;
-            color: var(--wb-ink) !important;
+            color: var(--wb-field-ink) !important;
         }}
 
         .stApp :where(input, textarea),
         .stApp [data-baseweb="select"] :where(div, span),
         .stApp [data-testid="stMultiSelect"] :where(div, span),
         .stApp [data-testid="stButtonGroup"] button {{
-            color: var(--wb-ink) !important;
+            color: var(--wb-field-ink) !important;
         }}
 
         [data-baseweb="popover"] :where(div, span, p, label, li),
@@ -1049,7 +1049,7 @@ def inject_global_styles(
         }}
 
         /* Base Web paints an extra inner layer in some Streamlit releases.
-           Color that layer too so dark-theme text never lands on a white box. */
+           Color it too so the selected field surface and text stay paired. */
         .stApp [data-baseweb="input"] > div,
         .stApp [data-baseweb="base-input"],
         .stApp [data-baseweb="base-input"] > div,
