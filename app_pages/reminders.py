@@ -7,6 +7,7 @@ from typing import Any
 
 import streamlit as st
 
+from water_buddy.clock import local_now
 from water_buddy.domain import (
     dismiss_reminder,
     progress_summary,
@@ -40,7 +41,7 @@ def _moment(value: Any) -> datetime | None:
     except (TypeError, ValueError):
         return None
     if parsed.tzinfo is not None:
-        return parsed.astimezone().replace(tzinfo=None)
+        return local_now(parsed)
     return parsed
 
 
@@ -55,7 +56,7 @@ def _next_reminder_label(value: Any) -> tuple[str, str]:
     scheduled = _moment(value)
     if scheduled is None:
         return "Not scheduled", "Save reminder settings to create the next alert."
-    now = datetime.now()
+    now = local_now()
     seconds = (scheduled - now).total_seconds()
     if seconds <= 0:
         relative = "Due now"
@@ -145,7 +146,9 @@ if due_now or test_active:
                 if is_enabled:
                     dismiss_reminder(data)
                 st.session_state["reminders_test_active"] = False
-                preferences["last_reminder_dismissed_at"] = datetime.now().isoformat(timespec="seconds")
+                preferences["last_reminder_dismissed_at"] = local_now().isoformat(
+                    timespec="seconds"
+                )
                 store.save(data)
                 st.toast("Reminder dismissed.", icon=":material/check_circle:")
                 st.rerun()
@@ -212,7 +215,7 @@ with settings_column:
         if enabled:
             if not preferences.get("next_reminder_at") or previous_interval != int(interval) or not is_enabled:
                 preferences["next_reminder_at"] = (
-                    datetime.now() + timedelta(minutes=int(interval))
+                    local_now() + timedelta(minutes=int(interval))
                 ).isoformat(timespec="seconds")
         else:
             preferences["next_reminder_at"] = None
@@ -247,7 +250,9 @@ with st.container(horizontal=True):
         key="reminders_test",
     ):
         st.session_state["reminders_test_active"] = True
-        preferences["last_test_reminder_at"] = datetime.now().isoformat(timespec="seconds")
+        preferences["last_test_reminder_at"] = local_now().isoformat(
+            timespec="seconds"
+        )
         store.save(data)
         st.toast("Test reminder triggered.", icon=":material/notifications_active:")
         st.rerun()
@@ -268,7 +273,9 @@ with st.container(horizontal=True):
         disabled=not is_enabled,
     ):
         dismiss_reminder(data)
-        preferences["last_reminder_dismissed_at"] = datetime.now().isoformat(timespec="seconds")
+        preferences["last_reminder_dismissed_at"] = local_now().isoformat(
+            timespec="seconds"
+        )
         store.save(data)
         st.toast("Next reminder scheduled from now.", icon=":material/check_circle:")
         st.rerun()

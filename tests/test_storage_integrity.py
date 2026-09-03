@@ -39,9 +39,7 @@ class JsonStoreIntegrityTests(unittest.TestCase):
         self,
     ) -> None:
         fixed_utc = datetime(2026, 8, 21, 8, 15, 30, tzinfo=timezone.utc)
-        expected_updated_at = (
-            fixed_utc.astimezone().replace(tzinfo=None).isoformat(timespec="seconds")
-        )
+        expected_updated_at = "2026-08-21T13:45:30"
 
         with tempfile.TemporaryDirectory() as temporary_directory:
             path = Path(temporary_directory) / "water_buddy.json"
@@ -50,8 +48,8 @@ class JsonStoreIntegrityTests(unittest.TestCase):
             data["profile"]["name"] = "  Ava  "
             data["metadata"]["updated_at"] = "2000-01-01T00:00:00"
 
-            with patch("water_buddy.storage.datetime") as clock:
-                clock.now.return_value = fixed_utc
+            with patch("water_buddy.storage.local_now") as clock:
+                clock.return_value = datetime.fromisoformat(expected_updated_at)
                 store.save(data)
 
             primary = json.loads(path.read_text(encoding="utf-8"))

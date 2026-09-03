@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from water_buddy.clock import local_now
 from water_buddy.domain import default_state, normalize_state, validate_backup_payload
 
 
@@ -49,7 +50,7 @@ class JsonStore:
         with self._lock:
             self.last_recovery_path = None
             self.last_backup_recovery_path = None
-            now = datetime.now(timezone.utc).astimezone().replace(tzinfo=None)
+            now = local_now()
 
             if not self.path.exists():
                 state = self._recover_backup_or_default(now)
@@ -99,7 +100,7 @@ class JsonStore:
         if not isinstance(data, Mapping):
             raise TypeError("Water Buddy state must be a mapping.")
         with self._lock:
-            now = datetime.now(timezone.utc).astimezone().replace(tzinfo=None)
+            now = local_now()
             normalized = normalize_state(data, now)
             normalized["metadata"]["updated_at"] = now.isoformat(timespec="seconds")
             try:

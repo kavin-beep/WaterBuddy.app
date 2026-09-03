@@ -6,9 +6,10 @@ import copy
 import math
 import uuid
 from collections.abc import Mapping, MutableMapping
-from datetime import date, datetime, time, timedelta, timezone
+from datetime import date, datetime, time, timedelta
 from typing import Any
 
+from water_buddy.clock import local_now
 from water_buddy.pet import (
     award_hydration_xp,
     default_pet_state,
@@ -231,12 +232,7 @@ def _normalize_quick_log_amounts(raw: Any) -> list[int]:
 
 
 def _local_now(value: datetime | None = None) -> datetime:
-    # Resolve through UTC so the host's current local offset is applied
-    # consistently before timestamps are persisted without timezone metadata.
-    current = value or datetime.now(timezone.utc).astimezone()
-    if current.tzinfo is not None:
-        current = current.astimezone().replace(tzinfo=None)
-    return current.replace(microsecond=0)
+    return local_now(value)
 
 
 def _as_date(value: date | datetime | str | None = None) -> date:

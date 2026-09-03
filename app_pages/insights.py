@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 from typing import Any
 
 import altair as alt
 import pandas as pd
 import streamlit as st
 
+from water_buddy.clock import APP_TIMEZONE, local_date
 from water_buddy.domain import calculate_streak, history_rows, progress_summary
 from water_buddy.ui import (
     format_volume,
@@ -31,7 +32,7 @@ def _as_date(value: Any) -> date:
     try:
         return date.fromisoformat(str(value)[:10])
     except (TypeError, ValueError):
-        return date.today()
+        return local_date()
 
 
 def _number(row: Mapping[str, Any], *keys: str, default: float = 0) -> float:
@@ -48,7 +49,11 @@ def _optional_date(value: Any) -> date | None:
     """Return a persisted date when valid without inventing a fallback day."""
 
     if isinstance(value, datetime):
-        return value.astimezone().date() if value.tzinfo is not None else value.date()
+        return (
+            value.astimezone(APP_TIMEZONE).date()
+            if value.tzinfo is not None
+            else value.date()
+        )
     if isinstance(value, date):
         return value
     try:
@@ -100,7 +105,7 @@ window_days = int(window_days or 7)
 
 today = progress_summary(data)
 fallback_goal = _number(today, "goal_ml", "goal", default=2200)
-local_today = datetime.now(timezone.utc).astimezone().date()
+local_today = local_date()
 eligible_days = _eligible_history_days(data, window_days, local_today)
 raw_rows = history_rows(data, eligible_days, today=local_today)
 normalized: list[dict[str, Any]] = []

@@ -7,6 +7,7 @@ from datetime import datetime, time
 
 import streamlit as st
 
+from water_buddy.clock import local_now
 from water_buddy.domain import (
     AGE_GOALS,
     DEFAULT_QUICK_LOG_AMOUNTS_ML,
@@ -578,7 +579,7 @@ with backup:
         st.download_button(
             "Download Water Buddy data",
             data=json.dumps(data, indent=2, ensure_ascii=False),
-            file_name=f"water-buddy-backup-{datetime.now():%Y-%m-%d}.json",
+            file_name=f"water-buddy-backup-{local_now():%Y-%m-%d}.json",
             mime="application/json",
             icon=":material/download:",
             width="stretch",

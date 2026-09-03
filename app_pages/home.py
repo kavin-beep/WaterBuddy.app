@@ -6,6 +6,7 @@ from datetime import datetime
 
 import streamlit as st
 
+from water_buddy.clock import APP_TIMEZONE, local_now
 from water_buddy.domain import (
     WATER_LOG_COOLDOWN_SECONDS,
     WaterLogCooldownError,
@@ -103,7 +104,7 @@ def _progress_message(progress: float) -> str:
 def _expected_progress(wake_time: str, sleep_time: str) -> float:
     """Return how far through the user's waking window the current time is."""
 
-    now = datetime.now()
+    now = local_now()
     try:
         wake_hour, wake_minute = (int(part) for part in wake_time.split(":", 1))
         sleep_hour, sleep_minute = (int(part) for part in sleep_time.split(":", 1))
@@ -134,7 +135,7 @@ def _suggested_next_sip(remaining_ml: int, expected_progress: float) -> int:
 def _daily_tip(pet_name: str) -> None:
     """Render a stable daily tip without background reruns or visual churn."""
 
-    tip_index = datetime.now().date().toordinal() % len(TIPS)
+    tip_index = local_now().date().toordinal() % len(TIPS)
     st.info(TIPS[tip_index], icon=":material/lightbulb:")
     st.caption(f"Today’s tip from {pet_name}.")
 
@@ -150,7 +151,7 @@ pet_name = str(pet.get("name", "Ripple")) or "Ripple"
 quick_amounts = preferences.get("quick_log_amounts_ml", (250, 500, 750, 1000))
 if not isinstance(quick_amounts, (list, tuple)) or len(quick_amounts) != 4:
     quick_amounts = (250, 500, 750, 1000)
-now = datetime.now()
+now = local_now()
 greeting = "Good morning" if now.hour < 12 else "Good afternoon" if now.hour < 18 else "Good evening"
 
 page_intro(
@@ -332,7 +333,10 @@ with st.container(border=True):
         for index, entry in enumerate(recent_entries):
             raw_time = str(entry.get("logged_at", ""))
             try:
-                logged_time = datetime.fromisoformat(raw_time).strftime("%I:%M %p")
+                logged_moment = datetime.fromisoformat(raw_time)
+                if logged_moment.tzinfo is not None:
+                    logged_moment = logged_moment.astimezone(APP_TIMEZONE)
+                logged_time = logged_moment.strftime("%I:%M %p")
             except ValueError:
                 logged_time = "Just now"
             source = str(entry.get("source", "Water")).strip() or "Water"

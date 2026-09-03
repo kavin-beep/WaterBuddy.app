@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from datetime import datetime
 from typing import Any
 
 import streamlit as st
 
+from water_buddy.clock import local_now
 from water_buddy.domain import calculate_streak, progress_summary
 from water_buddy.pet import pet_snapshot
 from water_buddy.ui import format_volume, mount_page_ambience, page_intro, render_pet
@@ -45,7 +45,7 @@ def _coach_reply(
         progress /= 100
     percentage = max(0, round(_number(summary, "percentage", default=progress * 100)))
     name = str(profile.get("name", "friend")).strip() or "friend"
-    now = datetime.now()
+    now = local_now()
     hours_left = max(1, 22 - now.hour)
     interval = int(preferences.get("reminder_interval_minutes", 45) or 45)
     reminders_on = bool(preferences.get("reminders_enabled", True))

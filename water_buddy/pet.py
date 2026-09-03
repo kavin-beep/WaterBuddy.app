@@ -14,6 +14,8 @@ from collections.abc import Mapping, MutableMapping
 from datetime import date, datetime, timedelta
 from typing import Any
 
+from water_buddy.clock import local_now
+
 PET_SCHEMA_VERSION = 1
 DEFAULT_PET_NAME = "Ripple"
 PET_SPECIES = "Aqualing"
@@ -164,10 +166,7 @@ HOURLY_PET_FACTS: tuple[str, ...] = (
 
 
 def _local_now(value: datetime | None = None) -> datetime:
-    current = value or datetime.now()
-    if current.tzinfo is not None:
-        current = current.astimezone().replace(tzinfo=None)
-    return current.replace(microsecond=0)
+    return local_now(value)
 
 
 def hourly_pet_message(now: datetime | None = None) -> dict[str, str]:
