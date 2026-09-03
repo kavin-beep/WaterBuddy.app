@@ -12,11 +12,9 @@ from water_buddy.domain import (
     WATER_LOG_COOLDOWN_SECONDS,
     WaterLogCooldownError,
     add_water,
-    delete_water_entry,
     progress_summary,
     reset_day,
     undo_last_water,
-    update_water_entry,
     water_log_cooldown_remaining,
 )
 from water_buddy.pet import pet_snapshot
@@ -28,7 +26,7 @@ from water_buddy.ui import (
     render_empty_state,
     render_pet,
 )
-from water_buddy.units import from_millilitres, to_millilitres, unit_label
+from water_buddy.units import to_millilitres, unit_label
 
 mount_page_ambience("log")
 
@@ -161,46 +159,6 @@ def _confirm_reset() -> None:
             st.session_state.sound_event = "reset"
             _persist("Today has been reset. Fresh start, no judgment.")
             st.session_state.celebrate_once = False
-            st.rerun()
-
-
-@st.dialog("Delete water entry?", icon=":material/delete:")
-def _confirm_delete_entry(entry_id: str) -> None:
-    """Confirm removal of one selected entry without touching the rest of the day."""
-
-    entries = progress_summary(st.session_state.data).get("entries", [])
-    selected = next(
-        (
-            entry
-            for entry in entries
-            if isinstance(entry, dict) and str(entry.get("id")) == entry_id
-        ),
-        None,
-    )
-    if selected is None:
-        st.info("That entry is no longer in today’s log.")
-        return
-
-    units = st.session_state.data.get("preferences", {}).get("units", "ml")
-    st.warning(
-        "Remove "
-        f"{format_volume(selected.get('amount_ml', 0), units)} from today’s log? "
-        "Your pet reward and daily progress will be corrected automatically.",
-        icon=":material/warning:",
-    )
-    with st.container(horizontal=True, horizontal_alignment="right"):
-        if st.button("Keep entry", key="keep_selected_water_entry"):
-            st.rerun()
-        if st.button(
-            "Delete entry",
-            type="primary",
-            icon=":material/delete:",
-            key="delete_selected_water_entry",
-        ):
-            if delete_water_entry(st.session_state.data, entry_id):
-                _clear_guard_notice()
-                st.session_state.sound_event = "reset"
-                _persist("Water entry deleted and today’s progress corrected.")
             st.rerun()
 
 
@@ -342,7 +300,10 @@ if entries:
     for entry in entries:
         raw_time = str(entry.get("logged_at", ""))
         try:
-            logged_at = datetime.fromisoformat(raw_time).strftime("%I:%M %p")
+            logged_moment = datetime.fromisoformat(raw_time)
+            if logged_moment.tzinfo is not None:
+                logged_moment = logged_moment.astimezone()
+            logged_at = logged_moment.strftime("%I:%M %p")
         except ValueError:
             logged_at = "Unknown"
         rows.append(
@@ -365,78 +326,6 @@ if entries:
         key="today_entries_table",
     )
 
-    with st.expander("Correct an entry", icon=":material/edit:"):
-        entry_map = {
-            str(entry.get("id")): entry
-            for entry in entries
-            if isinstance(entry, dict) and entry.get("id")
-        }
-
-        def _entry_option_label(entry_id: str) -> str:
-            entry = entry_map[entry_id]
-            raw_time = str(entry.get("logged_at", ""))
-            try:
-                time_label = datetime.fromisoformat(raw_time).strftime("%I:%M %p")
-            except ValueError:
-                time_label = "Unknown time"
-            return (
-                f"{time_label} · "
-                f"{format_volume(entry.get('amount_ml', 0), units)} · "
-                f"{entry.get('source', 'Water')}"
-            )
-
-        selected_entry_id = st.selectbox(
-            "Choose an entry",
-            options=list(entry_map),
-            format_func=_entry_option_label,
-            key="log_entry_editor_id",
-        )
-        selected_entry = entry_map[selected_entry_id]
-        imperial = str(units).casefold() == "oz"
-        existing_amount = from_millilitres(selected_entry.get("amount_ml", 0), units)
-        source_options = list(
-            dict.fromkeys([str(selected_entry.get("source", "Water")), *SOURCES])
-        )
-        with st.form(f"edit_water_entry_{selected_entry_id}", border=False):
-            corrected_amount = st.number_input(
-                f"Corrected amount ({unit_label(units)})",
-                min_value=from_millilitres(1, "oz") if imperial else 1,
-                max_value=from_millilitres(5000, "oz") if imperial else 5000,
-                value=existing_amount if imperial else round(existing_amount),
-                step=0.1 if imperial else 50,
-                format="%.1f" if imperial else "%d",
-                key=f"log_entry_amount_{selected_entry_id}",
-            )
-            corrected_source = st.selectbox(
-                "Corrected source",
-                options=source_options,
-                key=f"log_entry_source_{selected_entry_id}",
-            )
-            save_correction = st.form_submit_button(
-                "Save correction",
-                type="primary",
-                icon=":material/save:",
-            )
-        if save_correction:
-            try:
-                update_water_entry(
-                    data,
-                    selected_entry_id,
-                    to_millilitres(corrected_amount, units),
-                    corrected_source,
-                )
-            except (KeyError, ValueError) as error:
-                st.error(str(error), icon=":material/error:")
-            else:
-                _persist("Water entry corrected. Progress and pet rewards now match.")
-                st.rerun()
-
-        if st.button(
-            "Delete selected entry",
-            icon=":material/delete:",
-            key="open_delete_selected_entry",
-        ):
-            _confirm_delete_entry(selected_entry_id)
 else:
     render_empty_state(
         "Your timeline is ready",

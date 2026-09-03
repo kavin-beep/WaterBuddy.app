@@ -483,32 +483,22 @@ class PageSmokeTests(unittest.TestCase):
             today = next(iter(app.session_state["data"]["daily_records"].values()))
             self.assertEqual(today["intake_ml"], 296)
 
-    def test_entry_editor_accepts_full_domain_range_in_imperial_mode(self) -> None:
+    def test_log_page_does_not_render_entry_correction_controls(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
-            store = JsonStore(Path(temporary_directory) / "imperial-editor-range.json")
+            store = JsonStore(Path(temporary_directory) / "entry-list.json")
             data = default_state()
-            data["preferences"]["units"] = "oz"
             today = next(iter(data["daily_records"].values()))
-            logged_at = (
-                datetime.now(timezone.utc).astimezone().replace(tzinfo=None)
-                - timedelta(minutes=1)
-            ).isoformat(timespec="seconds")
-            today["intake_ml"] = 5001
+            today["intake_ml"] = 250
             today["entries"] = [
                 {
-                    "id": "small-entry",
-                    "amount_ml": 1,
-                    "source": "Water",
-                    "logged_at": logged_at,
-                },
-                {
-                    "id": "large-entry",
-                    "amount_ml": 5000,
-                    "source": "Bottle refill",
-                    "logged_at": logged_at,
-                },
+                    "id": "existing-entry",
+                    "amount_ml": 250,
+                    "source": "Glass",
+                    "logged_at": datetime.now(timezone.utc).astimezone().isoformat(
+                        timespec="seconds"
+                    ),
+                }
             ]
-
             app = AppTest.from_file(
                 ROOT / "app_pages" / "log_water.py",
                 default_timeout=20,
@@ -521,97 +511,11 @@ class PageSmokeTests(unittest.TestCase):
             app.run()
 
             self.assertEqual(list(app.exception), [])
-            next(
-                control
-                for control in app.selectbox
-                if control.label == "Choose an entry"
-            ).set_value("large-entry").run()
-            self.assertEqual(list(app.exception), [])
-
-    def test_water_entry_can_be_corrected_then_deleted_with_confirmation(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            store = JsonStore(Path(temporary_directory) / "entry-correction.json")
-            app = AppTest.from_file(
-                ROOT / "app_pages" / "log_water.py",
-                default_timeout=20,
+            self.assertNotIn("Choose an entry", {field.label for field in app.selectbox})
+            self.assertNotIn(
+                "Save correction",
+                {button.label for button in app.button},
             )
-            app.session_state["data"] = default_state()
-            app.session_state["store"] = store
-            app.session_state["flash_message"] = None
-            app.session_state["sound_event"] = None
-            app.session_state["celebrate_once"] = False
-            app.run()
-
-            next(button for button in app.button if button.label == "+250 ml").click().run()
-            today = next(iter(app.session_state["data"]["daily_records"].values()))
-            original_entry = today["entries"][0].copy()
-
-            next(
-                field
-                for field in app.number_input
-                if field.label == "Corrected amount (ml)"
-            ).set_value(650)
-            next(
-                field
-                for field in app.selectbox
-                if field.label == "Corrected source"
-            ).set_value("Meal")
-            next(
-                button for button in app.button if button.label == "Save correction"
-            ).click().run()
-
-            self.assertEqual(list(app.exception), [])
-            corrected_today = next(
-                iter(app.session_state["data"]["daily_records"].values())
-            )
-            self.assertEqual(corrected_today["intake_ml"], 650)
-            self.assertEqual(len(corrected_today["entries"]), 1)
-            corrected_entry = corrected_today["entries"][0]
-            self.assertEqual(corrected_entry["id"], original_entry["id"])
-            self.assertEqual(corrected_entry["logged_at"], original_entry["logged_at"])
-            self.assertEqual(corrected_entry["amount_ml"], 650)
-            self.assertEqual(corrected_entry["source"], "Meal")
-            persisted_today = next(iter(store.load()["daily_records"].values()))
-            self.assertEqual(persisted_today, corrected_today)
-
-            next(
-                button
-                for button in app.button
-                if button.label == "Delete selected entry"
-            ).click().run()
-            self.assertTrue(
-                any(
-                    "Remove 650 ml from today" in warning.value
-                    for warning in app.warning
-                )
-            )
-            # AppTest performs full-script reruns, while dialog buttons trigger a
-            # fragment rerun in the browser. Re-trigger the opener alongside the
-            # dialog action so both paths are represented in the full rerun.
-            app.button("open_delete_selected_entry").click()
-            app.button("keep_selected_water_entry").click().run()
-            kept_today = next(
-                iter(app.session_state["data"]["daily_records"].values())
-            )
-            self.assertEqual(kept_today["intake_ml"], 650)
-            self.assertEqual(len(kept_today["entries"]), 1)
-
-            next(
-                button
-                for button in app.button
-                if button.label == "Delete selected entry"
-            ).click().run()
-            app.button("open_delete_selected_entry").click()
-            app.button("delete_selected_water_entry").click().run()
-
-            self.assertEqual(list(app.exception), [])
-            deleted_today = next(
-                iter(app.session_state["data"]["daily_records"].values())
-            )
-            self.assertEqual(deleted_today["intake_ml"], 0)
-            self.assertEqual(deleted_today["entries"], [])
-            persisted_deleted_today = next(iter(store.load()["daily_records"].values()))
-            self.assertEqual(persisted_deleted_today, deleted_today)
 
     def test_restore_preview_requires_confirmation_and_cancel_preserves_data(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
