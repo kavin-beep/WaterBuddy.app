@@ -7,7 +7,7 @@ from datetime import datetime, time
 
 import streamlit as st
 
-from water_buddy.clock import local_now
+from water_buddy.clock import current_timezone_name, local_now
 from water_buddy.domain import (
     AGE_GOALS,
     DEFAULT_QUICK_LOG_AMOUNTS_ML,
@@ -475,6 +475,16 @@ with schedule:
     with st.container(border=True, height="stretch"):
         st.subheader("Daily rhythm")
         st.caption("Used for pace calculations and quiet reminder hours.")
+        st.text_input(
+            "Device time zone",
+            value=current_timezone_name(),
+            disabled=True,
+            help="Detected automatically from your browser and device settings.",
+        )
+        st.caption(
+            f"Current local time: **{local_now():%I:%M %p}**. "
+            "Water Buddy refreshes this timezone each time you sign in."
+        )
         st.time_input("Wake-up time", key="profile_wake_time")
         st.time_input("Sleep time", key="profile_sleep_time")
 

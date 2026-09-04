@@ -11,6 +11,11 @@ import streamlit as st
 
 from water_buddy.audio import sound_bytes
 from water_buddy.auth import AccountError, AccountStore
+from water_buddy.clock import (
+    configure_timezone,
+    current_browser_offset_minutes,
+    current_timezone_name,
+)
 from water_buddy.domain import (
     WaterLogCooldownError,
     add_water,
@@ -86,6 +91,20 @@ st.set_page_config(
 )
 
 
+def _configure_user_clock() -> None:
+    """Use the timezone configured on the current user's device/browser."""
+
+    try:
+        timezone_name = st.context.timezone
+    except (AttributeError, RuntimeError):
+        timezone_name = None
+    try:
+        timezone_offset = st.context.timezone_offset
+    except (AttributeError, RuntimeError):
+        timezone_offset = None
+    configure_timezone(timezone_name, timezone_offset)
+
+
 def _clear_mounted_user() -> None:
     """Remove every known user-bound value after invalid authentication.
 
@@ -136,11 +155,21 @@ def _initialize_app() -> None:
         is_new_profile = primary_was_missing and not backup_existed
         try:
             data = store.load()
+            preferences = data.setdefault("preferences", {})
+            detected_timezone = current_timezone_name()
+            detected_offset = current_browser_offset_minutes()
+            timezone_changed = (
+                preferences.get("timezone") != detected_timezone
+                or preferences.get("timezone_offset_minutes") != detected_offset
+            )
+            preferences["timezone"] = detected_timezone
+            preferences["timezone_offset_minutes"] = detected_offset
             if is_new_profile:
                 display_name = str(
                     user.get("display_name") or "Hydration hero"
                 ).strip()
                 data.setdefault("profile", {})["name"] = display_name[:48]
+            if is_new_profile or timezone_changed:
                 store.save(data)
         except StorageError:
             st.session_state.account_init_error = (
@@ -316,6 +345,7 @@ def _reminder_watch() -> None:
         st.rerun()
 
 
+_configure_user_clock()
 _initialize_app()
 
 session_data = st.session_state.get("data")

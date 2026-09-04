@@ -10,7 +10,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-from water_buddy.clock import APP_TIMEZONE, local_date
+from water_buddy.clock import current_timezone, local_date
 from water_buddy.domain import calculate_streak, history_rows, progress_summary
 from water_buddy.ui import (
     format_volume,
@@ -50,7 +50,7 @@ def _optional_date(value: Any) -> date | None:
 
     if isinstance(value, datetime):
         return (
-            value.astimezone(APP_TIMEZONE).date()
+            value.astimezone(current_timezone()).date()
             if value.tzinfo is not None
             else value.date()
         )

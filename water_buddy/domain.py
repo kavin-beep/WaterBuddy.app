@@ -377,6 +377,8 @@ def default_state(now: datetime | None = None) -> dict[str, Any]:
         "preferences": {
             "theme": "Dark",
             "background_motion": True,
+            "timezone": "UTC",
+            "timezone_offset_minutes": None,
             "units": "ml",
             "quick_log_amounts_ml": list(DEFAULT_QUICK_LOG_AMOUNTS_ML),
             "reminders_enabled": True,

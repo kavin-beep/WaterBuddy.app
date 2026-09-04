@@ -6,7 +6,7 @@ from datetime import datetime
 
 import streamlit as st
 
-from water_buddy.clock import APP_TIMEZONE, local_now
+from water_buddy.clock import current_timezone, local_now
 from water_buddy.domain import (
     WATER_LOG_COOLDOWN_SECONDS,
     WaterLogCooldownError,
@@ -335,7 +335,7 @@ with st.container(border=True):
             try:
                 logged_moment = datetime.fromisoformat(raw_time)
                 if logged_moment.tzinfo is not None:
-                    logged_moment = logged_moment.astimezone(APP_TIMEZONE)
+                    logged_moment = logged_moment.astimezone(current_timezone())
                 logged_time = logged_moment.strftime("%I:%M %p")
             except ValueError:
                 logged_time = "Just now"

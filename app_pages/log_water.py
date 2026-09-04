@@ -8,7 +8,7 @@ from datetime import datetime
 import pandas as pd
 import streamlit as st
 
-from water_buddy.clock import APP_TIMEZONE
+from water_buddy.clock import current_timezone
 from water_buddy.domain import (
     WATER_LOG_COOLDOWN_SECONDS,
     WaterLogCooldownError,
@@ -303,7 +303,7 @@ if entries:
         try:
             logged_moment = datetime.fromisoformat(raw_time)
             if logged_moment.tzinfo is not None:
-                logged_moment = logged_moment.astimezone(APP_TIMEZONE)
+                logged_moment = logged_moment.astimezone(current_timezone())
             logged_at = logged_moment.strftime("%I:%M %p")
         except ValueError:
             logged_at = "Unknown"
