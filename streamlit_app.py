@@ -20,6 +20,7 @@ from water_buddy.domain import (
     WaterLogCooldownError,
     add_water,
     dismiss_reminder,
+    ensure_reminder_schedule,
     normalize_theme,
     progress_summary,
     reminder_is_due,
@@ -169,7 +170,11 @@ def _initialize_app() -> None:
                     user.get("display_name") or "Hydration hero"
                 ).strip()
                 data.setdefault("profile", {})["name"] = display_name[:48]
-            if is_new_profile or timezone_changed:
+            reminder_schedule_changed = ensure_reminder_schedule(
+                data,
+                force=timezone_changed,
+            )
+            if is_new_profile or timezone_changed or reminder_schedule_changed:
                 store.save(data)
         except StorageError:
             st.session_state.account_init_error = (

@@ -41,6 +41,7 @@ __all__ = (
     "default_state",
     "delete_water_entry",
     "dismiss_reminder",
+    "ensure_reminder_schedule",
     "ensure_today",
     "history_rows",
     "hydration_score",
@@ -1445,6 +1446,56 @@ def reminder_is_due(
     except (TypeError, ValueError):
         return False
     return current >= scheduled
+
+
+def ensure_reminder_schedule(
+    data: MutableMapping[str, Any],
+    now: datetime | None = None,
+    *,
+    force: bool = False,
+) -> bool:
+    """Repair a missing, invalid, stale, or timezone-shifted reminder.
+
+    This is intended for session mounting and settings changes. It prevents a
+    reminder saved during an earlier session from continuing to display a time
+    that has already passed after the user signs back in.
+    """
+
+    current = _local_now(now)
+    preferences = data.setdefault("preferences", {})
+    if not isinstance(preferences, dict):
+        preferences = {}
+        data["preferences"] = preferences
+
+    if not bool(preferences.get("reminders_enabled", True)):
+        if preferences.get("next_reminder_at") is None:
+            return False
+        preferences["next_reminder_at"] = None
+        _touch(data, current)
+        return True
+
+    interval = _safe_int(
+        preferences.get("reminder_interval_minutes"),
+        45,
+        minimum=5,
+        maximum=360,
+    )
+    scheduled: datetime | None = None
+    try:
+        raw_scheduled = preferences.get("next_reminder_at")
+        if raw_scheduled:
+            scheduled = _local_now(datetime.fromisoformat(str(raw_scheduled)))
+    except (TypeError, ValueError):
+        scheduled = None
+
+    if not force and scheduled is not None and scheduled > current:
+        return False
+
+    preferences["next_reminder_at"] = (
+        current + timedelta(minutes=interval)
+    ).isoformat(timespec="seconds")
+    _touch(data, current)
+    return True
 
 
 def snooze_reminder(

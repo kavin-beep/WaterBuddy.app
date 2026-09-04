@@ -203,9 +203,6 @@ with settings_column:
         )
 
     if saved:
-        previous_interval = _whole_number(
-            preferences.get("reminder_interval_minutes"), 45
-        )
         preferences["reminders_enabled"] = bool(enabled)
         preferences["reminder_interval_minutes"] = int(interval)
         preferences["quiet_start"] = quiet_start.strftime("%H:%M")
@@ -213,10 +210,9 @@ with settings_column:
         profile["wake_time"] = wake_time.strftime("%H:%M")
         profile["sleep_time"] = sleep_time.strftime("%H:%M")
         if enabled:
-            if not preferences.get("next_reminder_at") or previous_interval != int(interval) or not is_enabled:
-                preferences["next_reminder_at"] = (
-                    local_now() + timedelta(minutes=int(interval))
-                ).isoformat(timespec="seconds")
+            preferences["next_reminder_at"] = (
+                local_now() + timedelta(minutes=int(interval))
+            ).isoformat(timespec="seconds")
         else:
             preferences["next_reminder_at"] = None
             st.session_state["reminders_test_active"] = False

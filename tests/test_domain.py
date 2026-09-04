@@ -25,6 +25,7 @@ from water_buddy.domain import (
     default_state,
     delete_water_entry,
     dismiss_reminder,
+    ensure_reminder_schedule,
     history_rows,
     hydration_score,
     normalize_state,
@@ -608,6 +609,30 @@ class ReminderTests(unittest.TestCase):
         ).isoformat()
 
         self.assertFalse(reminder_is_due(self.data, self.now))
+
+    def test_stale_reminder_is_rescheduled_from_login_time(self) -> None:
+        self.data["preferences"]["reminder_interval_minutes"] = 15
+        self.data["preferences"]["next_reminder_at"] = (
+            self.now - timedelta(minutes=8)
+        ).isoformat()
+
+        self.assertTrue(ensure_reminder_schedule(self.data, self.now))
+        self.assertEqual(
+            datetime.fromisoformat(self.data["preferences"]["next_reminder_at"]),
+            self.now + timedelta(minutes=15),
+        )
+
+    def test_timezone_change_forces_future_schedule_from_current_time(self) -> None:
+        existing = self.now + timedelta(minutes=5)
+        self.data["preferences"]["next_reminder_at"] = existing.isoformat()
+
+        self.assertTrue(
+            ensure_reminder_schedule(self.data, self.now, force=True)
+        )
+        self.assertEqual(
+            datetime.fromisoformat(self.data["preferences"]["next_reminder_at"]),
+            self.now + timedelta(minutes=45),
+        )
 
 
 class StorageTests(unittest.TestCase):
