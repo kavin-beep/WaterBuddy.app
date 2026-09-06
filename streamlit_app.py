@@ -29,6 +29,7 @@ from water_buddy.domain import (
 from water_buddy.device_login import (
     COOKIE_NAME,
     clear_device_cookie,
+    load_device_cookies,
     set_device_cookie,
 )
 from water_buddy.interaction_audio import mount_interface_sounds
@@ -139,10 +140,12 @@ def _initialize_app() -> None:
 
     user = st.session_state.get("auth_user")
     if not isinstance(user, Mapping) or not user.get("user_id"):
-        try:
-            device_token = st.context.cookies.get(COOKIE_NAME)
-        except (AttributeError, RuntimeError):
-            device_token = None
+        clearing_cookie = bool(st.session_state.get("device_cookie_to_clear"))
+        device_token = (
+            device_cookies.get(COOKIE_NAME)
+            if device_cookies.ready() and not clearing_cookie
+            else None
+        )
         if device_token:
             remembered_account = st.session_state.account_store.authenticate_device_session(
                 device_token
@@ -256,10 +259,7 @@ def _sign_out() -> None:
     account_store = st.session_state.get("account_store")
     token = st.session_state.get("device_session_token")
     if not token:
-        try:
-            token = st.context.cookies.get(COOKIE_NAME)
-        except (AttributeError, RuntimeError):
-            token = None
+        token = device_cookies.get(COOKIE_NAME) if device_cookies.ready() else None
     if isinstance(account_store, AccountStore):
         account_store.revoke_device_session(token)
     st.session_state.clear()
@@ -269,11 +269,15 @@ def _sign_out() -> None:
 def _sync_device_cookie() -> None:
     """Apply cookie changes requested by sign-in or sign-out actions."""
 
-    token = st.session_state.pop("device_cookie_to_set", None)
-    if isinstance(token, str) and token:
-        set_device_cookie(token)
-    if st.session_state.pop("device_cookie_to_clear", False):
-        clear_device_cookie()
+    if not device_cookies.ready():
+        return
+    token = st.session_state.get("device_cookie_to_set")
+    if isinstance(token, str) and token and set_device_cookie(device_cookies, token):
+        st.session_state.pop("device_cookie_to_set", None)
+    if st.session_state.get("device_cookie_to_clear", False) and clear_device_cookie(
+        device_cookies
+    ):
+        st.session_state.pop("device_cookie_to_clear", None)
 
 
 def _save_with_flash(message: str) -> None:
@@ -395,6 +399,7 @@ def _reminder_watch() -> None:
 
 
 _configure_user_clock()
+device_cookies = load_device_cookies()
 _initialize_app()
 _sync_device_cookie()
 
@@ -481,6 +486,12 @@ pages = {
             title="Pet room",
             icon=":material/pets:",
             url_path="pet",
+        ),
+        st.Page(
+            "app_pages/desktop_pet.py",
+            title="Desktop pet",
+            icon=":material/install_desktop:",
+            url_path="desktop",
         ),
     ],
     "Progress": [

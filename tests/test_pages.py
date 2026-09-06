@@ -21,6 +21,7 @@ from water_buddy.storage import JsonStore
 ROOT = Path(__file__).resolve().parents[1]
 PAGE_FILES = (
     "home.py",
+    "desktop_pet.py",
     "log_water.py",
     "insights.py",
     "achievements.py",
@@ -33,6 +34,7 @@ PAGE_AMBIENCE_VARIANTS = {
     "public_home.py": "welcome",
     "login.py": "welcome",
     "home.py": "home",
+    "desktop_pet.py": "pet",
     "log_water.py": "log",
     "pet.py": "pet",
     "insights.py": "insights",
@@ -113,6 +115,7 @@ class PageSmokeTests(unittest.TestCase):
                 "Home": (":material/home:", "home"),
                 "Log water": (":material/water_drop:", "log"),
                 "Pet room": (":material/pets:", "pet"),
+                "Desktop pet": (":material/install_desktop:", "desktop"),
                 "Insights": (":material/monitoring:", "insights"),
                 "Achievements": (":material/workspace_premium:", "achievements"),
                 "Reminders": (":material/notifications:", "reminders"),
@@ -259,6 +262,67 @@ class PageSmokeTests(unittest.TestCase):
                     for item in app.title
                 )
             )
+
+    def test_remembered_device_token_opens_private_home_without_password(self) -> None:
+        class ReadyCookies(dict):
+            def ready(self) -> bool:
+                return True
+
+            def save(self) -> None:
+                return None
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            store = AccountStore(
+                Path(temporary_directory) / "accounts.json",
+                pbkdf2_iterations=100_000,
+            )
+            account = store.register(
+                "Quick Login User",
+                "quick@example.com",
+                "safe-pass-123",
+            )
+            token = store.create_device_session(account["user_id"])
+            cookies = ReadyCookies(device_session=token)
+
+            with (
+                patch.dict(
+                    "os.environ",
+                    {"WATER_BUDDY_DATA_DIR": temporary_directory},
+                ),
+                patch(
+                    "water_buddy.device_login.load_device_cookies",
+                    return_value=cookies,
+                ),
+            ):
+                app = AppTest.from_file(ROOT / "streamlit_app.py", default_timeout=30)
+                app.run()
+
+            self.assertEqual(list(app.exception), [])
+            self.assertEqual(app.session_state["auth_user"]["email"], "quick@example.com")
+            self.assertEqual(app.session_state["device_session_token"], token)
+            self.assertIn("+250 ml", {button.label for button in app.button})
+            self.assertNotIn("Email address", {field.label for field in app.text_input})
+
+    def test_desktop_pet_quick_log_updates_the_same_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            store = JsonStore(Path(temporary_directory) / "desktop-pet.json")
+            app = AppTest.from_file(
+                ROOT / "app_pages" / "desktop_pet.py",
+                default_timeout=20,
+            )
+            app.session_state["data"] = default_state()
+            app.session_state["store"] = store
+            app.session_state["sound_event"] = None
+            app.run()
+
+            next(
+                button for button in app.button if button.label == "+250 ml"
+            ).click().run()
+
+            self.assertEqual(list(app.exception), [])
+            today = next(iter(store.load()["daily_records"].values()))
+            self.assertEqual(today["intake_ml"], 250)
+            self.assertEqual(today["entries"][0]["source"], "Desktop pet")
 
     def test_profile_storage_error_still_allows_sign_out(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:

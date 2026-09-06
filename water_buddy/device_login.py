@@ -1,39 +1,35 @@
-"""Small browser-cookie bridge for remembered-device authentication."""
+"""Browser-cookie support for remembered-device authentication."""
 
 from __future__ import annotations
 
-import json
+from streamlit_cookies_manager import CookieManager
 
-import streamlit.components.v1 as components
-
-COOKIE_NAME = "water_buddy_device"
-COOKIE_MAX_AGE_SECONDS = 30 * 24 * 60 * 60
+COOKIE_NAME = "device_session"
+COOKIE_PREFIX = "waterbuddy.app/v1/"
 
 
-def set_device_cookie(token: str) -> None:
-    """Persist an opaque token in a same-site, HTTPS-only browser cookie."""
+def load_device_cookies() -> CookieManager:
+    """Mount the bidirectional browser component and return its cookie mapping."""
 
-    safe_token = json.dumps(str(token))
-    components.html(
-        f"""
-        <script>
-          document.cookie = {json.dumps(COOKIE_NAME + "=")} + encodeURIComponent({safe_token})
-            + "; Path=/; Max-Age={COOKIE_MAX_AGE_SECONDS}; SameSite=Lax; Secure";
-        </script>
-        """,
-        height=0,
-    )
+    return CookieManager(prefix=COOKIE_PREFIX, path="/")
 
 
-def clear_device_cookie() -> None:
-    """Remove Water Buddy's remembered-device cookie in this browser."""
+def set_device_cookie(cookies: CookieManager, token: str) -> bool:
+    """Persist an opaque remembered-device token when the component is ready."""
 
-    components.html(
-        f"""
-        <script>
-          document.cookie = {json.dumps(COOKIE_NAME + "=")}
-            + "; Path=/; Max-Age=0; SameSite=Lax; Secure";
-        </script>
-        """,
-        height=0,
-    )
+    if not cookies.ready():
+        return False
+    cookies[COOKIE_NAME] = str(token)
+    cookies.save()
+    return True
+
+
+def clear_device_cookie(cookies: CookieManager) -> bool:
+    """Remove Water Buddy's remembered-device cookie from this browser."""
+
+    if not cookies.ready():
+        return False
+    if COOKIE_NAME in cookies:
+        del cookies[COOKIE_NAME]
+        cookies.save()
+    return True
