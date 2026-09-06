@@ -8,7 +8,7 @@
 
 [![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Streamlit 1.60](https://img.shields.io/badge/Streamlit-1.60-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
-[![Tests](https://img.shields.io/badge/tests-155%20passing-22C55E?style=for-the-badge&logo=checkmarx&logoColor=white)](#testing)
+[![Tests](https://img.shields.io/badge/tests-142%20passing-22C55E?style=for-the-badge&logo=checkmarx&logoColor=white)](#testing)
 [![Local first](https://img.shields.io/badge/data-local--first-06B6D4?style=for-the-badge&logo=shield&logoColor=white)](#privacy-by-design)
 
 **Water Buddy turns hydration into a small daily adventure—with quick logging, useful insights, gentle reminders, achievements, and a virtual companion named FLOW.**
@@ -52,12 +52,6 @@ then create an account or sign in. Keep **Remember this device** selected to ope
 future visits directly on your private Home dashboard. Water Buddy stores a
 revocable device token for this convenience—never the account password—and
 explicit **Sign out** removes Quick Login from that browser.
-
-For the optional native Windows mascot, build the companion in
-[`windows_companion`](windows_companion/README.md), then control it only from
-**Profile → Desktop Pet**. It is draggable, supports quick logging and reminders,
-and uses the same local Water Buddy profile and reward logic. Windows startup is
-opt-in and is never enabled automatically.
 
 <details>
 <summary><strong>macOS / Linux commands</strong></summary>
@@ -106,7 +100,6 @@ water_buddy/units.py             Canonical volume conversion and formatting
 water_buddy/ui.py                Shared design system and animated pet rendering
 water_buddy/audio.py             Dependency-free hydration feedback sounds
 water_buddy/interaction_audio.py Browser-native interface feedback sounds
-windows_companion/              Native PySide6 mascot, bridges, IPC, and lifecycle
 tests/                           Domain, storage, auth, UI, and page-level test suite
 ```
 
@@ -118,7 +111,7 @@ The `lib/` directory and `pubspec.yaml` are retained as references from the orig
 python -m unittest discover -s tests -v
 ```
 
-The suite contains **155 passing tests** covering authentication, per-user routing, logging and reward integrity, unit conversion, pet care, storage recovery, accessibility contracts, every Streamlit page, and the Windows companion contracts.
+The suite contains **142 passing tests** covering authentication, remembered-device login, per-user routing, logging and reward integrity, unit conversion, pet care, storage recovery, accessibility contracts, and every Streamlit page.
 
 ## 🔐 Privacy by design
 

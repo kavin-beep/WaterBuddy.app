@@ -23,23 +23,11 @@ SCHEMA_VERSION = 4
 WATER_LOG_COOLDOWN_SECONDS = 30
 DEFAULT_QUICK_LOG_AMOUNTS_ML: tuple[int, int, int, int] = (250, 500, 750, 1000)
 THEME_OPTIONS = ("Dark", "Light", "Japanese", "Cyber")
-DEFAULT_DESKTOP_PET_SETTINGS: dict[str, Any] = {
-    "enabled": False,
-    "always_on_top": True,
-    "scale": 1.0,
-    "motion_enabled": True,
-    "sound_enabled": True,
-    "reminders_enabled": True,
-    "recent_log_suppression_minutes": 10,
-    "position": None,
-    "monitor": None,
-}
 
 __all__ = (
     "AGE_GOALS",
     "APP_ID",
     "DEFAULT_QUICK_LOG_AMOUNTS_ML",
-    "DEFAULT_DESKTOP_PET_SETTINGS",
     "OCCUPATION_ADJUSTMENTS",
     "SCHEMA_VERSION",
     "THEME_OPTIONS",
@@ -58,7 +46,6 @@ __all__ = (
     "history_rows",
     "hydration_score",
     "normalize_state",
-    "normalize_desktop_pet_settings",
     "normalize_theme",
     "progress_summary",
     "reminder_is_due",
@@ -369,38 +356,6 @@ def normalize_theme(value: object) -> str:
     )
 
 
-def normalize_desktop_pet_settings(value: object) -> dict[str, Any]:
-    """Return safe native-companion preferences; disabled is always the default."""
-
-    raw = value if isinstance(value, Mapping) else {}
-    try:
-        scale = float(raw.get("scale", 1.0))
-    except (TypeError, ValueError, OverflowError):
-        scale = 1.0
-    position = raw.get("position")
-    if isinstance(position, Mapping):
-        try:
-            position = {"x": int(position["x"]), "y": int(position["y"])}
-        except (KeyError, TypeError, ValueError, OverflowError):
-            position = None
-    else:
-        position = None
-    monitor = raw.get("monitor")
-    return {
-        "enabled": _safe_bool(raw.get("enabled"), False),
-        "always_on_top": _safe_bool(raw.get("always_on_top"), True),
-        "scale": max(0.75, min(1.5, scale)),
-        "motion_enabled": _safe_bool(raw.get("motion_enabled"), True),
-        "sound_enabled": _safe_bool(raw.get("sound_enabled"), True),
-        "reminders_enabled": _safe_bool(raw.get("reminders_enabled"), True),
-        "recent_log_suppression_minutes": _safe_int(
-            raw.get("recent_log_suppression_minutes"), 10, minimum=0, maximum=120
-        ),
-        "position": position,
-        "monitor": str(monitor)[:128] if monitor not in (None, "") else None,
-    }
-
-
 def default_state(now: datetime | None = None) -> dict[str, Any]:
     """Return a new, fully initialized Water Buddy state dictionary."""
 
@@ -436,7 +391,6 @@ def default_state(now: datetime | None = None) -> dict[str, Any]:
             "next_reminder_at": (current + timedelta(minutes=45)).isoformat(
                 timespec="seconds"
             ),
-            "desktop_pet": copy.deepcopy(DEFAULT_DESKTOP_PET_SETTINGS),
         },
         "daily_records": {
             today_key: {
@@ -571,9 +525,6 @@ def normalize_state(data: Any, now: datetime | None = None) -> dict[str, Any]:
                 _valid_iso_datetime(raw_preferences.get("next_reminder_at"), next_default)
                 if reminders_enabled
                 else None
-            ),
-            "desktop_pet": normalize_desktop_pet_settings(
-                raw_preferences.get("desktop_pet")
             ),
         }
     )
@@ -757,7 +708,6 @@ def validate_backup_payload(
         "background_motion",
         "sound_enabled",
         "quick_log_amounts_ml",
-        "desktop_pet",
     }
     structured_legacy = (
         isinstance(raw.get("daily_records"), Mapping)

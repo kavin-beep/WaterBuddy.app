@@ -300,7 +300,6 @@ class PageSmokeTests(unittest.TestCase):
             self.assertIn("+250 ml", {button.label for button in app.button})
             self.assertNotIn("Email address", {field.label for field in app.text_input})
 
-
     def test_profile_storage_error_still_allows_sign_out(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             account = AccountStore(

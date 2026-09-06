@@ -11,9 +11,6 @@ _SYSTEM_TIMEZONE = datetime.now().astimezone().tzinfo or timezone.utc
 
 _current_timezone: ContextVar[tzinfo] = ContextVar(
     "water_buddy_timezone",
-    # A new Streamlit/native thread has no inherited ContextVar value. Using
-    # the device zone here prevents a UTC/local calendar split before the
-    # user's saved/browser timezone is mounted.
     default=_SYSTEM_TIMEZONE,
 )
 _current_timezone_name: ContextVar[str] = ContextVar(

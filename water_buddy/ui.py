@@ -15,7 +15,6 @@ from collections.abc import Mapping
 
 import streamlit as st
 
-from water_buddy.mascot_design import MASCOT_PALETTE
 from water_buddy.pet import hourly_pet_message
 from water_buddy.units import format_volume
 
@@ -2460,7 +2459,7 @@ def inject_global_styles(
             width: 4.65rem;
             height: 4.65rem;
             border-radius: 1.35rem .58rem 1.35rem .58rem;
-            background: linear-gradient(145deg, {MASCOT_PALETTE["tip_highlight"]}, {MASCOT_PALETTE["tip_mid"]} 46%, {MASCOT_PALETTE["tip_deep"]});
+            background: linear-gradient(145deg, #70F0FF, #28B8F1 46%, #3157F6);
             box-shadow: inset .18rem .2rem rgba(255,255,255,.3);
             transform: translateX(-50%) rotate(45deg);
         }}
@@ -2478,7 +2477,7 @@ def inject_global_styles(
             background:
                 radial-gradient(circle at 31% 24%, rgba(255,255,255,.9) 0 .38rem, transparent .44rem),
                 radial-gradient(circle at 37% 29%, rgba(255,255,255,.28) 0 .9rem, transparent .98rem),
-                linear-gradient(145deg, {MASCOT_PALETTE["body_highlight"]}, {MASCOT_PALETTE["body_mid"]} 35%, {MASCOT_PALETTE["body_deep"]} 68%, {MASCOT_PALETTE["body_shadow"]});
+                linear-gradient(145deg, #67E8F9, #20B6EB 35%, #2874ED 68%, #4835CB);
             box-shadow: inset -1.2rem -1.4rem 2.4rem rgba(33,30,145,.25),
                 inset .7rem .8rem 1.4rem rgba(255,255,255,.16),
                 0 1.25rem 2.8rem rgba(20,77,218,.34);
@@ -2504,7 +2503,7 @@ def inject_global_styles(
             width: 1.18rem;
             height: 1.4rem;
             border-radius: 52% 48% 50% 50%;
-            background: {MASCOT_PALETTE["face"]};
+            background: #061E52;
             box-shadow: inset .3rem .25rem rgba(255,255,255,.9), 0 .15rem .2rem rgba(1,8,24,.16);
             transform-origin: center;
             animation: wb-pet-blink 5.4s infinite;
@@ -2520,7 +2519,7 @@ def inject_global_styles(
             width: 1.32rem;
             height: .58rem;
             border-radius: 50%;
-            background: color-mix(in srgb, {MASCOT_PALETTE["cheek"]} 42%, transparent);
+            background: rgba(252,138,190,.42);
             filter: blur(.7px);
         }}
 
@@ -2534,7 +2533,7 @@ def inject_global_styles(
             left: 50%;
             width: 1.65rem;
             height: .85rem;
-            border: .2rem solid {MASCOT_PALETTE["face"]};
+            border: .2rem solid #061E52;
             border-top: 0;
             border-radius: 0 0 1.2rem 1.2rem;
             transform: translateX(-50%);
