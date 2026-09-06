@@ -20,6 +20,7 @@ from water_buddy.storage import JsonStore
 
 ROOT = Path(__file__).resolve().parents[1]
 PAGE_FILES = (
+    "download_app.py",
     "home.py",
     "log_water.py",
     "insights.py",
@@ -30,6 +31,7 @@ PAGE_FILES = (
     "profile.py",
 )
 PAGE_AMBIENCE_VARIANTS = {
+    "download_app.py": "welcome",
     "public_home.py": "welcome",
     "login.py": "welcome",
     "home.py": "home",
@@ -118,6 +120,7 @@ class PageSmokeTests(unittest.TestCase):
                 "Reminders": (":material/notifications:", "reminders"),
                 "FLOW coach": (":material/chat_bubble:", "coach"),
                 "Profile": (":material/tune:", "profile"),
+                "Download app": (":material/download:", "download"),
             },
         )
 

@@ -25,6 +25,12 @@ with intro:
         icon=":material/login:",
         width="stretch",
     )
+    st.page_link(
+        "app_pages/download_app.py",
+        label="Get the Windows app",
+        icon=":material/download:",
+        width="stretch",
+    )
     st.caption(
         "Already remembered on this device? Water Buddy will take you straight "
         "to your private Home automatically."

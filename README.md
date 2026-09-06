@@ -53,6 +53,11 @@ future visits directly on your private Home dashboard. Water Buddy stores a
 revocable device token for this convenience—never the account password—and
 explicit **Sign out** removes Quick Login from that browser.
 
+The public **Download app** page provides a small Windows ZIP installer. It
+adds a WaterBuddy icon to the Desktop and opens the hosted app in Chrome app
+mode (or the default browser when Chrome is unavailable); it does not install
+background software or add a Windows startup item.
+
 <details>
 <summary><strong>macOS / Linux commands</strong></summary>
 

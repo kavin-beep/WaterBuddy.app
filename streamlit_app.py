@@ -459,8 +459,14 @@ if "auth_user" not in st.session_state:
         icon=":material/login:",
         url_path="login",
     )
+    download_page = st.Page(
+        "app_pages/download_app.py",
+        title="Download app",
+        icon=":material/download:",
+        url_path="download",
+    )
     login_navigation = st.navigation(
-        [public_home_page, login_page],
+        [public_home_page, login_page, download_page],
         position="hidden",
     )
     login_navigation.run()
@@ -520,6 +526,12 @@ pages = {
             title="Profile",
             icon=":material/tune:",
             url_path="profile",
+        ),
+        st.Page(
+            "app_pages/download_app.py",
+            title="Download app",
+            icon=":material/download:",
+            url_path="download",
         ),
     ],
 }
