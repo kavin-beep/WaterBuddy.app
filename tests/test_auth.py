@@ -223,6 +223,39 @@ class AccountStoreTests(unittest.TestCase):
         signed_in = authenticate(store, "wrapper@example.com", "correct-password")
         self.assertEqual(signed_in, created)
 
+    def test_remembered_device_token_authenticates_and_can_be_revoked(self) -> None:
+        store = self.make_store()
+        account = store.register(
+            "Remembered User",
+            "remember@example.com",
+            "correct-password",
+        )
+
+        token = store.create_device_session(account["user_id"])
+        serialized = (self.root / "accounts.json").read_text(encoding="utf-8")
+        self.assertNotIn(token, serialized)
+        self.assertEqual(store.authenticate_device_session(token), account)
+
+        store.revoke_device_session(token)
+        self.assertIsNone(store.authenticate_device_session(token))
+
+    def test_remembered_device_token_expires(self) -> None:
+        clock = MutableClock(datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc))
+        store = self.make_store(clock=clock)
+        account = store.register(
+            "Remembered User",
+            "remember@example.com",
+            "correct-password",
+        )
+        token = store.create_device_session(account["user_id"], valid_days=1)
+
+        clock.advance(seconds=24 * 60 * 60 + 1)
+        self.assertIsNone(store.authenticate_device_session(token))
+
+    def test_invalid_remembered_device_token_is_rejected(self) -> None:
+        store = self.make_store()
+        self.assertIsNone(store.authenticate_device_session("not-a-token"))
+
     def test_constructor_rejects_unbounded_settings(self) -> None:
         path = self.root / "settings.json"
         with self.assertRaises(ValueError):

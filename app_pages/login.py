@@ -16,11 +16,20 @@ LOGGER = logging.getLogger(__name__)
 APP_ROOT = Path(__file__).resolve().parents[1]
 
 
-def _finish_sign_in(account: dict[str, str], welcome_message: str) -> None:
+def _finish_sign_in(
+    account: dict[str, str],
+    welcome_message: str,
+    *,
+    remember_device: bool,
+) -> None:
     """Attach a public account record to this browser session."""
 
     st.session_state.auth_user = account
     st.session_state.flash_message = welcome_message
+    if remember_device:
+        token = account_store.create_device_session(account["user_id"])
+        st.session_state.device_session_token = token
+        st.session_state.device_cookie_to_set = token
     for key in (
         "login_create_password",
         "login_confirm_password",
@@ -192,6 +201,12 @@ with access:
                 understands_local_storage = st.checkbox(
                     "I understand this preview stores my account on this device."
                 )
+                remember_device = st.checkbox(
+                    "Remember this device for quick login",
+                    value=True,
+                    help="Water Buddy stores a revocable device token, never your password.",
+                    key="login_create_remember_device",
+                )
                 create_submitted = st.form_submit_button(
                     "Create my Water Buddy",
                     type="primary",
@@ -222,6 +237,7 @@ with access:
                         _finish_sign_in(
                             account,
                             f"Welcome, {account['display_name']} — your new buddy is ready!",
+                            remember_device=remember_device,
                         )
         else:
             with st.form("sign_in_form", clear_on_submit=False, border=False):
@@ -237,6 +253,12 @@ with access:
                     max_chars=256,
                     autocomplete="current-password",
                     key="login_signin_password",
+                )
+                remember_device = st.checkbox(
+                    "Remember this device for quick login",
+                    value=True,
+                    help="Next time, this browser can open Water Buddy directly at Home.",
+                    key="login_signin_remember_device",
                 )
                 sign_in_submitted = st.form_submit_button(
                     "Enter Water Buddy",
@@ -260,13 +282,14 @@ with access:
                     _finish_sign_in(
                         account,
                         f"Welcome back, {account['display_name']}!",
+                        remember_device=remember_device,
                     )
 
         st.html(
             """
             <p class="wb-login-note">
-              Water Buddy does not send email or upload credentials. This local sign-in
-              separates profiles for people sharing this computer.
+              Quick Login remembers only a revocable device token, never your password.
+              Use Sign out before leaving a shared device.
             </p>
             """
         )

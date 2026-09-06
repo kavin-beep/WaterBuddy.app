@@ -47,7 +47,11 @@ python -m pip install -r requirements.txt
 python -m streamlit run streamlit_app.py
 ```
 
-Open the streamlit link given above, choose **Create account**, and start logging water. Later launches can use **Sign in**.
+Open the Streamlit link, use **Sign in / Quick Login** on the public Home page,
+then create an account or sign in. Keep **Remember this device** selected to open
+future visits directly on your private Home dashboard. Water Buddy stores a
+revocable device token for this convenience—never the account password—and
+explicit **Sign out** removes Quick Login from that browser.
 
 <details>
 <summary><strong>macOS / Linux commands</strong></summary>

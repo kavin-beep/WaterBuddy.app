@@ -30,6 +30,7 @@ PAGE_FILES = (
     "profile.py",
 )
 PAGE_AMBIENCE_VARIANTS = {
+    "public_home.py": "welcome",
     "login.py": "welcome",
     "home.py": "home",
     "log_water.py": "log",
@@ -252,7 +253,12 @@ class PageSmokeTests(unittest.TestCase):
 
             self.assertEqual(list(app.exception), [])
             self.assertNotIn("auth_user", app.session_state)
-            self.assertIn("Welcome to Water Buddy", [item.value for item in app.subheader])
+            self.assertTrue(
+                any(
+                    "Small sips" in item.value
+                    for item in app.title
+                )
+            )
 
     def test_profile_storage_error_still_allows_sign_out(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:

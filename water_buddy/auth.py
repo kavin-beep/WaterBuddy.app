@@ -29,6 +29,8 @@ PBKDF2_ALGORITHM: Final[str] = "pbkdf2_hmac_sha256"
 DEFAULT_PBKDF2_ITERATIONS: Final[int] = 600_000
 DEFAULT_MAX_ATTEMPTS: Final[int] = 5
 DEFAULT_LOCKOUT_SECONDS: Final[int] = 300
+DEFAULT_DEVICE_SESSION_DAYS: Final[int] = 30
+MAX_DEVICE_SESSIONS_PER_ACCOUNT: Final[int] = 8
 _SALT_BYTES: Final[int] = 16
 _DERIVED_KEY_BYTES: Final[int] = 32
 _MIN_PASSWORD_LENGTH: Final[int] = 8
@@ -317,6 +319,132 @@ class AccountStore:
             self._write_document_unlocked(document)
             return self._public_account(account)
 
+    def create_device_session(
+        self,
+        user_id: str,
+        *,
+        valid_days: int = DEFAULT_DEVICE_SESSION_DAYS,
+    ) -> str:
+        """Create an opaque remembered-device token.
+
+        Only a SHA-256 digest is persisted. The returned bearer token is meant
+        for the current browser cookie and is never a replacement password.
+        """
+
+        if not 1 <= int(valid_days) <= 365:
+            raise ValueError("valid_days must be between 1 and 365")
+        try:
+            clean_user_id = str(uuid.UUID(str(user_id)))
+        except (ValueError, TypeError, AttributeError) as exc:
+            raise AuthValidationError("This account could not be remembered.") from exc
+
+        token = secrets.token_urlsafe(32)
+        token_digest = self._device_token_digest(token)
+        now = self._now()
+        expires_at = now + timedelta(days=int(valid_days))
+
+        with self._lock:
+            document = self._load_document_unlocked()
+            account_exists = any(
+                account.get("user_id") == clean_user_id
+                for account in document["accounts"].values()
+                if isinstance(account, Mapping)
+            )
+            if not account_exists:
+                raise AuthValidationError("This account could not be remembered.")
+
+            sessions = document.setdefault("device_sessions", {})
+            self._remove_expired_device_sessions(sessions, now)
+            owned = sorted(
+                (
+                    (digest, session)
+                    for digest, session in sessions.items()
+                    if session.get("user_id") == clean_user_id
+                ),
+                key=lambda item: str(item[1].get("created_at", "")),
+            )
+            while len(owned) >= MAX_DEVICE_SESSIONS_PER_ACCOUNT:
+                oldest_digest, _ = owned.pop(0)
+                sessions.pop(oldest_digest, None)
+
+            sessions[token_digest] = {
+                "user_id": clean_user_id,
+                "created_at": self._format_time(now),
+                "expires_at": self._format_time(expires_at),
+            }
+            document["metadata"]["updated_at"] = self._format_time(now)
+            self._write_document_unlocked(document)
+        return token
+
+    def authenticate_device_session(self, token: str) -> PublicAccount | None:
+        """Return the account for a valid remembered-device token, if any."""
+
+        if not isinstance(token, str) or not 32 <= len(token) <= 256:
+            return None
+        token_digest = self._device_token_digest(token)
+        now = self._now()
+
+        with self._lock:
+            document = self._load_document_unlocked()
+            sessions = document.setdefault("device_sessions", {})
+            changed = self._remove_expired_device_sessions(sessions, now)
+            session = sessions.get(token_digest)
+            if not isinstance(session, Mapping):
+                if changed:
+                    document["metadata"]["updated_at"] = self._format_time(now)
+                    self._write_document_unlocked(document)
+                return None
+
+            user_id = str(session.get("user_id", ""))
+            account = next(
+                (
+                    candidate
+                    for candidate in document["accounts"].values()
+                    if candidate.get("user_id") == user_id
+                ),
+                None,
+            )
+            if not isinstance(account, Mapping):
+                sessions.pop(token_digest, None)
+                document["metadata"]["updated_at"] = self._format_time(now)
+                self._write_document_unlocked(document)
+                return None
+            return self._public_account(account)
+
+    def revoke_device_session(self, token: str | None) -> None:
+        """Revoke one remembered browser without affecting other devices."""
+
+        if not isinstance(token, str) or not token:
+            return
+        token_digest = self._device_token_digest(token)
+        now = self._now()
+        with self._lock:
+            document = self._load_document_unlocked()
+            sessions = document.setdefault("device_sessions", {})
+            if sessions.pop(token_digest, None) is not None:
+                document["metadata"]["updated_at"] = self._format_time(now)
+                self._write_document_unlocked(document)
+
+    @staticmethod
+    def _device_token_digest(token: str) -> str:
+        return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+    def _remove_expired_device_sessions(
+        self,
+        sessions: dict[str, Any],
+        now: datetime,
+    ) -> bool:
+        expired = [
+            digest
+            for digest, session in sessions.items()
+            if not isinstance(session, Mapping)
+            or (expires := self._parse_time(session.get("expires_at"))) is None
+            or expires <= now
+        ]
+        for digest in expired:
+            sessions.pop(digest, None)
+        return bool(expired)
+
     def _now(self) -> datetime:
         value = self._clock()
         if not isinstance(value, datetime):
@@ -330,6 +458,7 @@ class AccountStore:
         return {
             "schema_version": SCHEMA_VERSION,
             "accounts": {},
+            "device_sessions": {},
             "metadata": {"created_at": timestamp, "updated_at": timestamp},
         }
 
@@ -436,6 +565,9 @@ class AccountStore:
         metadata = raw.get("metadata")
         if not isinstance(metadata, dict):
             raise ValueError("invalid account metadata")
+        sessions = raw.setdefault("device_sessions", {})
+        if not isinstance(sessions, dict):
+            raise ValueError("invalid device sessions")
 
         for email_key, account in raw["accounts"].items():
             if not isinstance(email_key, str) or not isinstance(account, dict):
@@ -467,6 +599,20 @@ class AccountStore:
             if isinstance(attempts, bool) or not isinstance(attempts, int):
                 raise ValueError("invalid failed-attempt count")
             security["failed_attempts"] = min(self.max_attempts, max(0, attempts))
+
+        known_user_ids = {
+            str(account["user_id"]) for account in raw["accounts"].values()
+        }
+        for digest, session in sessions.items():
+            if (
+                not isinstance(digest, str)
+                or re.fullmatch(r"[0-9a-f]{64}", digest) is None
+                or not isinstance(session, dict)
+                or str(session.get("user_id", "")) not in known_user_ids
+                or self._parse_time(session.get("created_at")) is None
+                or self._parse_time(session.get("expires_at")) is None
+            ):
+                raise ValueError("invalid device session")
         return raw
 
     def _write_document_unlocked(self, document: Mapping[str, Any]) -> None:

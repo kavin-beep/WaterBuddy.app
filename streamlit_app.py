@@ -26,6 +26,11 @@ from water_buddy.domain import (
     reminder_is_due,
     snooze_reminder,
 )
+from water_buddy.device_login import (
+    COOKIE_NAME,
+    clear_device_cookie,
+    set_device_cookie,
+)
 from water_buddy.interaction_audio import mount_interface_sounds
 from water_buddy.pet import pet_snapshot
 from water_buddy.storage import JsonStore, StorageError
@@ -134,6 +139,25 @@ def _initialize_app() -> None:
 
     user = st.session_state.get("auth_user")
     if not isinstance(user, Mapping) or not user.get("user_id"):
+        try:
+            device_token = st.context.cookies.get(COOKIE_NAME)
+        except (AttributeError, RuntimeError):
+            device_token = None
+        if device_token:
+            remembered_account = st.session_state.account_store.authenticate_device_session(
+                device_token
+            )
+            if remembered_account is not None:
+                st.session_state.auth_user = remembered_account
+                st.session_state.device_session_token = device_token
+                st.session_state.flash_message = (
+                    "Quick Login ready — welcome back, "
+                    f"{remembered_account['display_name']}!"
+                )
+                user = remembered_account
+            else:
+                st.session_state.device_cookie_to_clear = True
+    if not isinstance(user, Mapping) or not user.get("user_id"):
         # Do not leave a previous profile mounted after sign-out or an app reload.
         _clear_mounted_user()
         return
@@ -227,9 +251,29 @@ def _initialize_app() -> None:
 
 
 def _sign_out() -> None:
-    """End only the current browser session; persisted account data stays intact."""
+    """End this session and revoke Quick Login for the current browser."""
 
+    account_store = st.session_state.get("account_store")
+    token = st.session_state.get("device_session_token")
+    if not token:
+        try:
+            token = st.context.cookies.get(COOKIE_NAME)
+        except (AttributeError, RuntimeError):
+            token = None
+    if isinstance(account_store, AccountStore):
+        account_store.revoke_device_session(token)
     st.session_state.clear()
+    st.session_state.device_cookie_to_clear = True
+
+
+def _sync_device_cookie() -> None:
+    """Apply cookie changes requested by sign-in or sign-out actions."""
+
+    token = st.session_state.pop("device_cookie_to_set", None)
+    if isinstance(token, str) and token:
+        set_device_cookie(token)
+    if st.session_state.pop("device_cookie_to_clear", False):
+        clear_device_cookie()
 
 
 def _save_with_flash(message: str) -> None:
@@ -352,6 +396,7 @@ def _reminder_watch() -> None:
 
 _configure_user_clock()
 _initialize_app()
+_sync_device_cookie()
 
 session_data = st.session_state.get("data")
 preferences = (
@@ -396,16 +441,21 @@ if account_init_error:
     st.stop()
 
 if "auth_user" not in st.session_state:
+    public_home_page = st.Page(
+        "app_pages/public_home.py",
+        title="Home",
+        icon=":material/home:",
+        url_path="home",
+        default=True,
+    )
+    login_page = st.Page(
+        "app_pages/login.py",
+        title="Sign in",
+        icon=":material/login:",
+        url_path="login",
+    )
     login_navigation = st.navigation(
-        [
-            st.Page(
-                "app_pages/login.py",
-                title="Welcome",
-                icon=":material/water_drop:",
-                url_path="welcome",
-                default=True,
-            )
-        ],
+        [public_home_page, login_page],
         position="hidden",
     )
     login_navigation.run()
