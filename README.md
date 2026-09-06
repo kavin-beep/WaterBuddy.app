@@ -53,10 +53,10 @@ future visits directly on your private Home dashboard. Water Buddy stores a
 revocable device token for this convenience—never the account password—and
 explicit **Sign out** removes Quick Login from that browser.
 
-For a Windows desktop launcher, open **Desktop pet** in the sidebar and download
-the shortcut. Move `WaterBuddy Pet.url` to the Windows Desktop; clicking it opens
-a compact pet panel whose four quick-log buttons write directly to the signed-in
-Water Buddy profile.
+For a Windows desktop launcher, open **Desktop pet** in Chrome, then use
+**three-dot menu → Cast, save, and share → Create shortcut**. The resulting
+Chrome shortcut opens a compact pet panel whose four quick-log buttons write
+directly to the signed-in Water Buddy profile.
 
 <details>
 <summary><strong>macOS / Linux commands</strong></summary>

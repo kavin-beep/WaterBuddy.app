@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import os
-
 import streamlit as st
 
 from water_buddy.domain import WaterLogCooldownError, add_water, progress_summary
@@ -12,7 +10,9 @@ from water_buddy.ui import format_volume, mount_page_ambience, render_pet
 
 mount_page_ambience("pet")
 
-DEFAULT_APP_URL = "https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app"
+DESKTOP_PET_URL = (
+    "https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/desktop"
+)
 
 
 def _log_from_desktop(amount_ml: int) -> None:
@@ -75,21 +75,20 @@ notice = st.session_state.pop("desktop_pet_notice", None)
 if notice:
     st.success(notice, icon=":material/check_circle:")
 
-app_url = os.environ.get("WATER_BUDDY_APP_URL", DEFAULT_APP_URL).rstrip("/")
-shortcut = (
-    "[InternetShortcut]\r\n"
-    f"URL={app_url}/desktop\r\n"
-    "IconIndex=0\r\n"
-)
-st.download_button(
-    "Download Windows desktop pet shortcut",
-    data=shortcut.encode("utf-8"),
-    file_name="WaterBuddy Pet.url",
-    mime="application/internet-shortcut",
-    icon=":material/install_desktop:",
+st.link_button(
+    "Open desktop pet directly in Chrome",
+    DESKTOP_PET_URL,
+    icon=":material/open_in_new:",
+    type="primary",
     width="stretch",
 )
-st.caption(
-    "Move the downloaded shortcut onto your Windows Desktop. Clicking it opens "
-    "this pet panel with your four saved quick-log amounts."
-)
+with st.expander("Put this pet on the Windows Desktop", expanded=True):
+    st.markdown(
+        "1. Keep this **Desktop pet** page open in Chrome.\n"
+        "2. Click Chrome’s **three-dot menu** in the top-right.\n"
+        "3. Select **Cast, save, and share → Create shortcut…**\n"
+        "4. Name it **WaterBuddy Pet**, then click **Create**.\n\n"
+        "Chrome will place a working shortcut on the Windows Desktop. Opening it "
+        "returns to this compact pet and its four quick-log buttons."
+    )
+    st.code(DESKTOP_PET_URL, language=None)
