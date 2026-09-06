@@ -487,12 +487,6 @@ pages = {
             icon=":material/pets:",
             url_path="pet",
         ),
-        st.Page(
-            "app_pages/desktop_pet.py",
-            title="Desktop pet",
-            icon=":material/install_desktop:",
-            url_path="desktop",
-        ),
     ],
     "Progress": [
         st.Page(

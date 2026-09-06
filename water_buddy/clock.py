@@ -7,14 +7,18 @@ from datetime import date, datetime, timedelta, timezone, tzinfo
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 DEFAULT_TIMEZONE_NAME = "UTC"
+_SYSTEM_TIMEZONE = datetime.now().astimezone().tzinfo or timezone.utc
 
 _current_timezone: ContextVar[tzinfo] = ContextVar(
     "water_buddy_timezone",
-    default=timezone.utc,
+    # A new Streamlit/native thread has no inherited ContextVar value. Using
+    # the device zone here prevents a UTC/local calendar split before the
+    # user's saved/browser timezone is mounted.
+    default=_SYSTEM_TIMEZONE,
 )
 _current_timezone_name: ContextVar[str] = ContextVar(
     "water_buddy_timezone_name",
-    default=DEFAULT_TIMEZONE_NAME,
+    default=str(_SYSTEM_TIMEZONE),
 )
 _current_browser_offset: ContextVar[int | None] = ContextVar(
     "water_buddy_browser_timezone_offset",

@@ -15,10 +15,12 @@ from water_buddy.domain import (
     THEME_OPTIONS,
     calculate_goal,
     default_state,
+    normalize_desktop_pet_settings,
     normalize_theme,
     set_daily_goal,
     validate_backup_payload,
 )
+from windows_companion.lifecycle import apply_enabled, reload_running
 from water_buddy.pet import pet_snapshot, rename_pet
 from water_buddy.ui import format_volume, mount_page_ambience, page_intro, render_pet
 from water_buddy.units import (
@@ -31,6 +33,7 @@ from water_buddy.units import (
 mount_page_ambience("profile")
 
 SOUND_VOLUME_OPTIONS = ("Soft", "Balanced", "Vivid")
+DESKTOP_PET_SIZES = {"Small": 0.8, "Medium": 1.0, "Large": 1.25}
 QUICK_LOG_OPTIONS = (150, 200, 250, 300, 350, 500, 750, 1000)
 PENDING_RESTORE_KEY = "pending_water_buddy_restore"
 
@@ -137,6 +140,34 @@ def _persist_experience_preference(
         preference_key,
         "Experience preference updated.",
     )
+
+
+def _persist_desktop_pet_settings() -> None:
+    """Persist the Profile controls and notify the one local companion instance."""
+
+    data = st.session_state["data"]
+    preferences = data.setdefault("preferences", {})
+    size_name = st.session_state.get("profile_desktop_pet_size", "Medium")
+    current = normalize_desktop_pet_settings(preferences.get("desktop_pet"))
+    current.update(
+        {
+            "enabled": bool(st.session_state.get("profile_desktop_pet_enabled", False)),
+            "always_on_top": bool(st.session_state.get("profile_desktop_pet_topmost", True)),
+            "scale": DESKTOP_PET_SIZES.get(size_name, 1.0),
+            "motion_enabled": bool(st.session_state.get("profile_desktop_pet_motion", True)),
+            "sound_enabled": bool(st.session_state.get("profile_desktop_pet_sound", True)),
+            "reminders_enabled": bool(st.session_state.get("profile_desktop_pet_reminders", True)),
+        }
+    )
+    preferences["desktop_pet"] = normalize_desktop_pet_settings(current)
+    st.session_state["store"].save(data)
+    status = apply_enabled(preferences["desktop_pet"]["enabled"], st.session_state["store"].path)
+    messages = {
+        "started": "Desktop mascot started.", "running": "Desktop mascot updated.",
+        "stopped": "Desktop mascot removed from Windows.", "not-running": "Desktop mascot is off.",
+        "not-installed": "Preference saved. Install the Windows companion on this device to display it.",
+    }
+    st.session_state.flash_message = messages[status]
 
 
 def _clear_profile_widget_state() -> None:
@@ -254,6 +285,7 @@ data = st.session_state.data
 profile = data.setdefault("profile", {})
 preferences = data.setdefault("preferences", {})
 pet = pet_snapshot(data)
+desktop_pet = normalize_desktop_pet_settings(preferences.get("desktop_pet"))
 
 current_auto_goal = calculate_goal(
     profile.get("age_group", next(iter(AGE_GOALS))),
@@ -297,6 +329,12 @@ defaults = {
     "profile_quick_log_amounts": _quick_log_defaults(
         preferences.get("quick_log_amounts_ml", DEFAULT_QUICK_LOG_AMOUNTS_ML)
     ),
+    "profile_desktop_pet_enabled": desktop_pet["enabled"],
+    "profile_desktop_pet_topmost": desktop_pet["always_on_top"],
+    "profile_desktop_pet_size": min(DESKTOP_PET_SIZES, key=lambda name: abs(DESKTOP_PET_SIZES[name] - desktop_pet["scale"])),
+    "profile_desktop_pet_motion": desktop_pet["motion_enabled"],
+    "profile_desktop_pet_sound": desktop_pet["sound_enabled"],
+    "profile_desktop_pet_reminders": desktop_pet["reminders_enabled"],
 }
 for state_key, default_value in defaults.items():
     st.session_state.setdefault(state_key, default_value)
@@ -501,6 +539,7 @@ with experience:
             args=("theme", "profile_theme", THEME_OPTIONS),
             width="stretch",
         )
+
         st.toggle(
             "Motion effects",
             key="profile_background_motion",
@@ -537,6 +576,28 @@ with experience:
             ),
             width="stretch",
         )
+
+with st.container(border=True):
+    st.subheader("Desktop Pet")
+    st.caption("Keep your real Water Buddy mascot on the Windows desktop. This is part of Profile, not a separate app page.")
+    st.toggle("Enable desktop mascot", key="profile_desktop_pet_enabled", on_change=_persist_desktop_pet_settings)
+    if st.session_state.profile_desktop_pet_enabled:
+        pet_left, pet_right = st.columns(2, gap="large")
+        with pet_left:
+            st.toggle("Always on top", key="profile_desktop_pet_topmost", on_change=_persist_desktop_pet_settings)
+            st.select_slider("Mascot size", options=list(DESKTOP_PET_SIZES), key="profile_desktop_pet_size", on_change=_persist_desktop_pet_settings)
+            st.toggle("Animate mascot", key="profile_desktop_pet_motion", on_change=_persist_desktop_pet_settings)
+        with pet_right:
+            st.toggle("Mascot sounds", key="profile_desktop_pet_sound", on_change=_persist_desktop_pet_settings)
+            st.toggle("Desktop hydration reminders", key="profile_desktop_pet_reminders", on_change=_persist_desktop_pet_settings)
+            if st.button("Reset mascot position", icon=":material/restart_alt:", key="reset_desktop_pet_position"):
+                preferences["desktop_pet"]["position"] = None
+                preferences["desktop_pet"]["monitor"] = None
+                st.session_state.store.save(data)
+                reload_running()
+                st.session_state.flash_message = "Mascot position reset to the bottom-right of your current work area."
+                st.rerun()
+        st.info("The native Windows companion must be installed once on this device. Startup remains opt-in and is never enabled automatically.", icon=":material/desktop_windows:")
 
 if st.button(
     "Save profile & plan",
