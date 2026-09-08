@@ -48,7 +48,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final progress = (_currentIntake / _dailyGoal).clamp(0.0, 1.0);
+    final progress = (_currentIntake / _dailyGoal).clamp(0.0, 1.0).toDouble();
     final percent = (progress * 100).round();
 
     return Scaffold(
