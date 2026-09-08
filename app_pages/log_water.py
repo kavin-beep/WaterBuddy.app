@@ -283,13 +283,15 @@ with custom:
                 st.rerun()
 
         with st.container(horizontal=True, horizontal_alignment="right"):
-            st.button(
+            undo_clicked = st.button(
                 "Undo last",
                 icon=":material/undo:",
                 key="undo_last_water",
-                on_click=_undo_last,
                 disabled=not bool(summary.get("entries")),
             )
+            if undo_clicked:
+                _undo_last()
+                st.rerun()
             if st.button(
                 "Reset day",
                 icon=":material/restart_alt:",
