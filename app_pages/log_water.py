@@ -34,6 +34,7 @@ mount_page_ambience("log")
 
 SOURCES = ("Glass", "Bottle", "Meal", "Workout", "Reminder", "Other")
 SIP_GUARD_NOTICE_KEY = "log_water_sip_guard_notice"
+RESET_TODAY_PENDING_KEY = "log_water_reset_today_pending"
 
 
 def _cooldown_seconds(error: WaterLogCooldownError | None = None) -> int:
@@ -152,6 +153,7 @@ def _confirm_reset() -> None:
     )
     with st.container(horizontal=True, horizontal_alignment="right"):
         if st.button("Keep my entries", key="cancel_reset_today"):
+            st.session_state.pop(RESET_TODAY_PENDING_KEY, None)
             st.rerun()
         if st.button(
             "Reset today",
@@ -160,6 +162,7 @@ def _confirm_reset() -> None:
             key="confirm_reset_today",
         ):
             reset_day(st.session_state.data)
+            st.session_state.pop(RESET_TODAY_PENDING_KEY, None)
             _clear_guard_notice()
             st.session_state.sound_event = "reset"
             _persist("Today has been reset. Fresh start, no judgment.")
@@ -292,7 +295,11 @@ with custom:
                 icon=":material/restart_alt:",
                 key="open_reset_today",
             ):
-                _confirm_reset()
+                st.session_state[RESET_TODAY_PENDING_KEY] = True
+                st.rerun()
+
+if st.session_state.get(RESET_TODAY_PENDING_KEY):
+    _confirm_reset()
 
 with bottle:
     render_bottle(
