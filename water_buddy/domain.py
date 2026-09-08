@@ -22,12 +22,14 @@ APP_ID = "water_buddy"
 SCHEMA_VERSION = 4
 WATER_LOG_COOLDOWN_SECONDS = 30
 DEFAULT_QUICK_LOG_AMOUNTS_ML: tuple[int, int, int, int] = (250, 500, 750, 1000)
+HYDRATION_MILESTONES: tuple[int, ...] = (25, 50, 75, 100)
 THEME_OPTIONS = ("Dark", "Light", "Japanese", "Cyber")
 
 __all__ = (
     "AGE_GOALS",
     "APP_ID",
     "DEFAULT_QUICK_LOG_AMOUNTS_ML",
+    "HYDRATION_MILESTONES",
     "OCCUPATION_ADJUSTMENTS",
     "SCHEMA_VERSION",
     "THEME_OPTIONS",
@@ -37,6 +39,7 @@ __all__ = (
     "badge_catalog",
     "calculate_goal",
     "calculate_streak",
+    "crossed_hydration_milestone",
     "calendar_week_rows",
     "default_state",
     "delete_water_entry",
@@ -900,6 +903,20 @@ def water_log_cooldown_remaining(
         return 0
     remaining = math.ceil(WATER_LOG_COOLDOWN_SECONDS - elapsed_seconds)
     return max(1, min(WATER_LOG_COOLDOWN_SECONDS, remaining))
+
+
+def crossed_hydration_milestone(before: float, after: float) -> int | None:
+    """Return the first hydration milestone crossed by a successful log."""
+
+    try:
+        previous_progress = float(before) * 100
+        current_progress = float(after) * 100
+    except (TypeError, ValueError, OverflowError):
+        return None
+    for milestone in HYDRATION_MILESTONES:
+        if previous_progress < milestone <= current_progress:
+            return milestone
+    return None
 
 
 def _validated_water_amount(amount_ml: Any) -> int:

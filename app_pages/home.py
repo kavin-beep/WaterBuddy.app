@@ -12,6 +12,7 @@ from water_buddy.domain import (
     WaterLogCooldownError,
     add_water,
     calculate_streak,
+    crossed_hydration_milestone,
     history_rows,
     progress_summary,
     water_log_cooldown_remaining,
@@ -57,6 +58,9 @@ def _log_amount(amount_ml: int, source: str) -> None:
 
     st.session_state.pop(_SIP_GUARD_NOTICE_KEY, None)
     st.session_state.store.save(data)
+    milestone = crossed_hydration_milestone(before, after["progress"])
+    if milestone is not None:
+        st.session_state.pending_pet_milestone = milestone
     units = data.get("preferences", {}).get("units", "ml")
     st.session_state.flash_message = (
         f"{format_volume(amount_ml, units)} added to today."

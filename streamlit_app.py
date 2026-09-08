@@ -19,6 +19,7 @@ from water_buddy.clock import (
 from water_buddy.domain import (
     WaterLogCooldownError,
     add_water,
+    crossed_hydration_milestone,
     dismiss_reminder,
     ensure_reminder_schedule,
     normalize_theme,
@@ -67,6 +68,7 @@ _USER_SCOPED_SESSION_KEYS = frozenset(
         "open_pet_rename",
         "open_reset_today",
         "pending_water_buddy_restore",
+        "pending_pet_milestone",
         "save_profile_plan",
         "sound_event",
         "store",
@@ -285,6 +287,20 @@ def _save_with_flash(message: str) -> None:
     st.session_state.flash_message = message
 
 
+@st.dialog("Hydration milestone", icon=":material/celebration:")
+def _show_pet_milestone_dialog(milestone: int) -> None:
+    pet = pet_snapshot(st.session_state.data)
+    pet["speech"] = f"We reached {milestone}% together!"
+    render_pet(pet, milestone / 100, compact=True)
+    st.success(
+        f"{pet.get('name', 'Ripple')} is celebrating your {milestone}% milestone!",
+        icon=":material/water_drop:",
+    )
+    if st.button("Keep going", type="primary", key="dismiss_pet_milestone"):
+        st.session_state.pop("pending_pet_milestone", None)
+        st.rerun()
+
+
 def _close_reminder_dialog() -> None:
     st.session_state.reminder_dialog_pending = False
     st.session_state.last_reminder_prompt = None
@@ -347,6 +363,9 @@ def _show_reminder_dialog() -> None:
                 )
             else:
                 dismiss_reminder(data)
+                milestone = crossed_hydration_milestone(before, updated["progress"])
+                if milestone is not None:
+                    st.session_state.pending_pet_milestone = milestone
                 if before < 1 <= updated["progress"]:
                     st.session_state.celebrate_once = True
                     st.session_state.sound_event = "goal"
@@ -571,6 +590,8 @@ if reminders_enabled and not daily_goal_complete:
     _reminder_watch()
 elif daily_goal_complete:
     st.session_state.reminder_dialog_pending = False
+if st.session_state.get("pending_pet_milestone") is not None:
+    _show_pet_milestone_dialog(int(st.session_state.pending_pet_milestone))
 if st.session_state.reminder_dialog_pending:
     _show_reminder_dialog()
 

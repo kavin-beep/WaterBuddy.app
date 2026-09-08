@@ -13,6 +13,7 @@ from water_buddy.domain import (
     WATER_LOG_COOLDOWN_SECONDS,
     WaterLogCooldownError,
     add_water,
+    crossed_hydration_milestone,
     progress_summary,
     reset_day,
     undo_last_water,
@@ -118,6 +119,9 @@ def _quick_add(amount_ml: int) -> None:
         _remember_guard_block(error)
         return
     _clear_guard_notice()
+    milestone = crossed_hydration_milestone(before, after["progress"])
+    if milestone is not None:
+        st.session_state.pending_pet_milestone = milestone
     if before < 1 <= after["progress"]:
         st.session_state.celebrate_once = True
         st.session_state.sound_event = "goal"
@@ -264,6 +268,9 @@ with custom:
                 )
             else:
                 _clear_guard_notice()
+                milestone = crossed_hydration_milestone(before, after["progress"])
+                if milestone is not None:
+                    st.session_state.pending_pet_milestone = milestone
                 if before < 1 <= after["progress"]:
                     st.session_state.celebrate_once = True
                     st.session_state.sound_event = "goal"
