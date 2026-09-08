@@ -5,7 +5,8 @@ final userProfileRepositoryProvider = Provider<UserProfileRepository>((ref) {
   return UserProfileRepository();
 });
 
-final userProfileStatusProvider = FutureProvider.family<bool, String>((ref, uid) async {
+final userProfileStatusProvider =
+    FutureProvider.family<bool, String>((ref, uid) async {
   final repository = ref.read(userProfileRepositoryProvider);
   return repository.userHasProfile(uid);
 });

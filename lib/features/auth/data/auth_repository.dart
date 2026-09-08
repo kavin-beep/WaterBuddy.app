@@ -32,11 +32,14 @@ class AuthRepository {
   }
 
   Future<UserCredential> signInWithEmail(String email, String password) async {
-    return _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+    return _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password);
   }
 
-  Future<UserCredential> createUserWithEmail(String email, String password) async {
-    return _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+  Future<UserCredential> createUserWithEmail(
+      String email, String password) async {
+    return _firebaseAuth.createUserWithEmailAndPassword(
+        email: email, password: password);
   }
 
   Future<void> signOut() async {

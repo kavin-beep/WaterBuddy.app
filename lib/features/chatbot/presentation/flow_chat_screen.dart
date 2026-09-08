@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/widgets/glass_card.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/glass_card.dart';
 import '../../mascot/mascot_widget.dart';
 
 class FlowChatScreen extends StatefulWidget {
@@ -17,11 +17,17 @@ class _FlowChatScreenState extends State<FlowChatScreen> {
   Timer? _mascotResetTimer;
   String _mascotEmotion = 'wave';
   final List<Map<String, String>> _messages = [
-    {'sender': 'flow', 'message': 'Hi Jordan! I\'m FLOW, your hydration coach. How can I help you today?'},
+    {
+      'sender': 'flow',
+      'message':
+          'Hi Jordan! I\'m FLOW, your hydration coach. How can I help you today?'
+    },
   ];
 
   void _triggerMascotReaction(String message) {
-    final shouldCelebrate = RegExp(r'water|hydrate|drink|sip|bottle|wet|liquid', caseSensitive: false).hasMatch(message);
+    final shouldCelebrate = RegExp(r'water|hydrate|drink|sip|bottle|wet|liquid',
+            caseSensitive: false)
+        .hasMatch(message);
     if (!shouldCelebrate) return;
 
     setState(() => _mascotEmotion = 'happy');
@@ -41,7 +47,11 @@ class _FlowChatScreenState extends State<FlowChatScreen> {
 
     setState(() {
       _messages.add({'sender': 'user', 'message': text});
-      _messages.add({'sender': 'flow', 'message': 'That sounds great! Remember to hydrate regularly and keep your streak going.'});
+      _messages.add({
+        'sender': 'flow',
+        'message':
+            'That sounds great! Remember to hydrate regularly and keep your streak going.'
+      });
       _controller.clear();
     });
   }
@@ -73,7 +83,9 @@ class _FlowChatScreenState extends State<FlowChatScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'Water drops make FLOW smile ✨',
-                    style: TextStyle(color: AppTheme.textPrimary.withOpacity(0.8), fontSize: 13),
+                    style: TextStyle(
+                        color: AppTheme.textPrimary.withOpacity(0.8),
+                        fontSize: 13),
                   ),
                 ],
               ),
@@ -88,13 +100,17 @@ class _FlowChatScreenState extends State<FlowChatScreen> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Align(
-                      alignment: isFlow ? Alignment.centerLeft : Alignment.centerRight,
+                      alignment:
+                          isFlow ? Alignment.centerLeft : Alignment.centerRight,
                       child: GlassCard(
                         child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Text(
                             message['message']!,
-                            style: TextStyle(color: isFlow ? AppTheme.textPrimary : AppTheme.primary),
+                            style: TextStyle(
+                                color: isFlow
+                                    ? AppTheme.textPrimary
+                                    : AppTheme.primary),
                           ),
                         ),
                       ),
@@ -114,14 +130,18 @@ class _FlowChatScreenState extends State<FlowChatScreen> {
                         hintText: 'Ask FLOW a question',
                         filled: true,
                         fillColor: Colors.white,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: BorderSide.none),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide.none),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton(
                     onPressed: _sendMessage,
-                    style: ElevatedButton.styleFrom(shape: const CircleBorder(), padding: const EdgeInsets.all(16)),
+                    style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(16)),
                     child: const Icon(Icons.send),
                   ),
                 ],

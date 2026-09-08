@@ -9,7 +9,8 @@ class MascotWidget extends StatefulWidget {
   State<MascotWidget> createState() => _MascotWidgetState();
 }
 
-class _MascotWidgetState extends State<MascotWidget> with SingleTickerProviderStateMixin {
+class _MascotWidgetState extends State<MascotWidget>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _bounceAnimation;
 
@@ -20,7 +21,8 @@ class _MascotWidgetState extends State<MascotWidget> with SingleTickerProviderSt
       vsync: this,
       duration: const Duration(milliseconds: 700),
     );
-    _bounceAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeOutBack);
+    _bounceAnimation =
+        CurvedAnimation(parent: _controller, curve: Curves.easeOutBack);
     _controller.forward();
   }
 
@@ -41,14 +43,20 @@ class _MascotWidgetState extends State<MascotWidget> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     final isHappy = widget.emotion == 'happy' || widget.emotion == 'celebrate';
-    final baseColor = isHappy ? const Color(0xFF4DD0E1) : const Color(0xFF1E88E5);
-    final accentColor = isHappy ? const Color(0xFF87F7FF) : const Color(0xFF3DD6FF);
+    final baseColor =
+        isHappy ? const Color(0xFF4DD0E1) : const Color(0xFF1E88E5);
+    final accentColor =
+        isHappy ? const Color(0xFF87F7FF) : const Color(0xFF3DD6FF);
 
     return AnimatedBuilder(
       animation: _bounceAnimation,
       builder: (context, child) {
-        final scale = isHappy ? 1.0 + (_bounceAnimation.value * 0.08) : 1.0 + (_bounceAnimation.value * 0.03);
-        final offset = isHappy ? -8 + (_bounceAnimation.value * 6) : -4 + (_bounceAnimation.value * 2);
+        final scale = isHappy
+            ? 1.0 + (_bounceAnimation.value * 0.08)
+            : 1.0 + (_bounceAnimation.value * 0.03);
+        final offset = isHappy
+            ? -8 + (_bounceAnimation.value * 6)
+            : -4 + (_bounceAnimation.value * 2);
 
         return Transform.translate(
           offset: Offset(0, offset),
@@ -112,9 +120,12 @@ class _DropClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path();
     path.moveTo(size.width / 2, 0);
-    path.quadraticBezierTo(size.width * 0.95, size.height * 0.25, size.width * 0.62, size.height);
-    path.quadraticBezierTo(size.width * 0.5, size.height * 0.95, size.width * 0.38, size.height);
-    path.quadraticBezierTo(size.width * 0.05, size.height * 0.25, size.width / 2, 0);
+    path.quadraticBezierTo(
+        size.width * 0.95, size.height * 0.25, size.width * 0.62, size.height);
+    path.quadraticBezierTo(
+        size.width * 0.5, size.height * 0.95, size.width * 0.38, size.height);
+    path.quadraticBezierTo(
+        size.width * 0.05, size.height * 0.25, size.width / 2, 0);
     return path..close();
   }
 

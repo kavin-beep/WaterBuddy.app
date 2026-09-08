@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/widgets/glass_card.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/glass_card.dart';
 import '../auth_providers.dart';
 
 class EmailAuthScreen extends ConsumerStatefulWidget {
@@ -27,9 +27,11 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
     try {
       final auth = ref.read(authRepositoryProvider);
       if (_isRegister) {
-        await auth.createUserWithEmail(_emailController.text.trim(), _passwordController.text);
+        await auth.createUserWithEmail(
+            _emailController.text.trim(), _passwordController.text);
       } else {
-        await auth.signInWithEmail(_emailController.text.trim(), _passwordController.text);
+        await auth.signInWithEmail(
+            _emailController.text.trim(), _passwordController.text);
       }
       if (mounted) {
         Navigator.of(context).pop();
@@ -74,12 +76,15 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
                 ),
                 if (_errorMessage != null) ...[
                   const SizedBox(height: 16),
-                  Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
+                  Text(_errorMessage!,
+                      style: const TextStyle(color: Colors.red)),
                 ],
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _submit,
-                  child: _isLoading ? const CircularProgressIndicator(color: Colors.white) : Text(_isRegister ? 'Register' : 'Sign In'),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(_isRegister ? 'Register' : 'Sign In'),
                 ),
                 const SizedBox(height: 16),
                 TextButton(
@@ -88,7 +93,9 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
                       _isRegister = !_isRegister;
                     });
                   },
-                  child: Text(_isRegister ? 'Already have an account? Sign in' : 'Create an account'),
+                  child: Text(_isRegister
+                      ? 'Already have an account? Sign in'
+                      : 'Create an account'),
                 ),
               ],
             ),

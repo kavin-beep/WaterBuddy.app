@@ -4,13 +4,15 @@ import '../models/user_profile.dart';
 class UserProfileRepository {
   final FirebaseFirestore _firestore;
 
-  UserProfileRepository({FirebaseFirestore? firestore}) : _firestore = firestore ?? FirebaseFirestore.instance;
+  UserProfileRepository({FirebaseFirestore? firestore})
+      : _firestore = firestore ?? FirebaseFirestore.instance;
 
   CollectionReference get _users => _firestore.collection('users');
 
   Future<bool> userHasProfile(String uid) async {
     final snapshot = await _users.doc(uid).get();
-    return snapshot.exists && (snapshot.data() as Map<String, dynamic>?)?['onboarded'] == true;
+    return snapshot.exists &&
+        (snapshot.data() as Map<String, dynamic>?)?['onboarded'] == true;
   }
 
   Future<UserProfile?> fetchUserProfile(String uid) async {

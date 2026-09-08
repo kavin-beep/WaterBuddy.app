@@ -10,7 +10,8 @@ class WelcomeScreen extends StatefulWidget {
   State<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProviderStateMixin {
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _animationController;
   late final Animation<double> _fadeAnimation;
 
@@ -108,7 +109,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                                 height: 68,
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
-                                    colors: [Color(0xFF3DD6FF), Color(0xFF2196F3)],
+                                    colors: [
+                                      Color(0xFF3DD6FF),
+                                      Color(0xFF2196F3)
+                                    ],
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                   ),
@@ -127,12 +131,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                                   children: const [
                                     Text(
                                       'Stay refreshed',
-                                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700),
                                     ),
                                     SizedBox(height: 8),
                                     Text(
                                       'Simple tracking, smart reminders, and friendly motivation for every day.',
-                                      style: TextStyle(fontSize: 14, color: AppTheme.textSecondary, height: 1.5),
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: AppTheme.textSecondary,
+                                          height: 1.5),
                                     ),
                                   ],
                                 ),
@@ -159,7 +168,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                     const SizedBox(height: 16),
                     TextButton(
                       onPressed: _openAuth,
-                      child: const Text('Sign in if you already have an account'),
+                      child:
+                          const Text('Sign in if you already have an account'),
                     ),
                     const SizedBox(height: 24),
                   ],
@@ -188,7 +198,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
       ),
       child: Text(
         label,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+        style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textPrimary),
       ),
     );
   }

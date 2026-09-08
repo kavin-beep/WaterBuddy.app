@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/widgets/glass_card.dart';
-import '../auth/auth_providers.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/glass_card.dart';
+import '../auth_providers.dart';
 import '../../home/presentation/home_screen.dart';
 import '../../onboarding/presentation/onboarding_screen.dart';
 import '../../profile/profile_providers.dart';
@@ -21,7 +21,8 @@ class AuthGate extends ConsumerWidget {
         }
         final profileStatus = ref.watch(userProfileStatusProvider(user.uid));
         return profileStatus.when(
-          data: (hasProfile) => hasProfile ? const HomeScreen() : const OnboardingScreen(),
+          data: (hasProfile) =>
+              hasProfile ? const HomeScreen() : const OnboardingScreen(),
           loading: () => const _LoadingScreen(),
           error: (error, _) => _ErrorScreen(message: error.toString()),
         );

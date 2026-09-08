@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/widgets/glass_card.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/glass_card.dart';
 import '../../home/presentation/home_screen.dart';
 import '../../profile/models/user_profile.dart';
 import '../../profile/profile_providers.dart';
@@ -120,14 +120,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   TextFormField(
                     controller: _nameController,
                     decoration: const InputDecoration(labelText: 'Name'),
-                    validator: (value) => value?.isEmpty == true ? 'Please enter your name' : null,
+                    validator: (value) => value?.isEmpty == true
+                        ? 'Please enter your name'
+                        : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _ageController,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(labelText: 'Age'),
-                    validator: (value) => (value == null || value.isEmpty) ? 'Please enter your age' : null,
+                    validator: (value) => (value == null || value.isEmpty)
+                        ? 'Please enter your age'
+                        : null,
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -136,8 +140,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         child: TextFormField(
                           controller: _heightController,
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(labelText: 'Height (cm)'),
-                          validator: (value) => (value == null || value.isEmpty) ? 'Enter height' : null,
+                          decoration:
+                              const InputDecoration(labelText: 'Height (cm)'),
+                          validator: (value) => (value == null || value.isEmpty)
+                              ? 'Enter height'
+                              : null,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -145,8 +152,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         child: TextFormField(
                           controller: _weightController,
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(labelText: 'Weight (kg)'),
-                          validator: (value) => (value == null || value.isEmpty) ? 'Enter weight' : null,
+                          decoration:
+                              const InputDecoration(labelText: 'Weight (kg)'),
+                          validator: (value) => (value == null || value.isEmpty)
+                              ? 'Enter weight'
+                              : null,
                         ),
                       ),
                     ],
@@ -178,7 +188,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     value: _activityLevel,
                     items: const [
                       DropdownMenuItem(value: 'Low', child: Text('Low')),
-                      DropdownMenuItem(value: 'Moderate', child: Text('Moderate')),
+                      DropdownMenuItem(
+                          value: 'Moderate', child: Text('Moderate')),
                       DropdownMenuItem(value: 'High', child: Text('High')),
                     ],
                     onChanged: (value) {
@@ -188,7 +199,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         });
                       }
                     },
-                    decoration: const InputDecoration(labelText: 'Activity level'),
+                    decoration:
+                        const InputDecoration(labelText: 'Activity level'),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -213,7 +225,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: _isSaving ? null : _saveProfile,
-                    child: _isSaving ? const CircularProgressIndicator(color: Colors.white) : const Text('Save profile'),
+                    child: _isSaving
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('Save profile'),
                   ),
                 ],
               ),
@@ -230,7 +244,8 @@ class _TimeField extends StatelessWidget {
   final TimeOfDay time;
   final VoidCallback onTap;
 
-  const _TimeField({required this.label, required this.time, required this.onTap});
+  const _TimeField(
+      {required this.label, required this.time, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -238,7 +253,8 @@ class _TimeField extends StatelessWidget {
       onTap: onTap,
       child: AbsorbPointer(
         child: TextFormField(
-          decoration: InputDecoration(labelText: label, hintText: time.format(context)),
+          decoration:
+              InputDecoration(labelText: label, hintText: time.format(context)),
         ),
       ),
     );

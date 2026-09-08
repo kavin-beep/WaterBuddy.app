@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/widgets/glass_card.dart';
+
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/glass_card.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -13,11 +14,36 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _currentIntake = 950;
   final int _dailyGoal = 2500;
+  final _customAmountController = TextEditingController();
+
+  @override
+  void dispose() {
+    _customAmountController.dispose();
+    super.dispose();
+  }
 
   void _incrementIntake(int amount) {
     setState(() {
       _currentIntake += amount;
     });
+  }
+
+  void _addCustomIntake() {
+    final amount = int.tryParse(_customAmountController.text.trim());
+    if (amount == null || amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Enter a water amount greater than 0 ml.'),
+        ),
+      );
+      return;
+    }
+
+    _incrementIntake(amount);
+    _customAmountController.clear();
+    FocusScope.of(context).unfocus();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('$amount ml added to today.')));
   }
 
   @override
@@ -46,7 +72,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             children: [
               const Text(
                 'Good morning, Jordan',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary,
+                ),
               ),
               const SizedBox(height: 8),
               const Text(
@@ -65,18 +95,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: const [
-                            Text('Daily goal', style: TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+                            Text(
+                              'Daily goal',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppTheme.textSecondary,
+                              ),
+                            ),
                             SizedBox(height: 6),
-                            Text('2,500 ml', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                            Text(
+                              '2,500 ml',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 14,
+                          ),
                           decoration: BoxDecoration(
                             color: AppTheme.accent.withOpacity(0.18),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: const Text('Streak: 7 days', style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.primary)),
+                          child: const Text(
+                            'Streak: 7 days',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.primary,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -88,9 +139,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('$_currentIntake ml', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 38)),
+                              Text(
+                                '$_currentIntake ml',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displaySmall
+                                    ?.copyWith(fontSize: 38),
+                              ),
                               const SizedBox(height: 6),
-                              Text('$percent% completed', style: const TextStyle(color: AppTheme.textSecondary)),
+                              Text(
+                                '$percent% completed',
+                                style: const TextStyle(
+                                  color: AppTheme.textSecondary,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -105,7 +167,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 end: Alignment.bottomCenter,
                               ),
                               boxShadow: [
-                                BoxShadow(color: AppTheme.primary.withOpacity(0.22), blurRadius: 24, offset: const Offset(0, 14)),
+                                BoxShadow(
+                                  color: AppTheme.primary.withOpacity(0.22),
+                                  blurRadius: 24,
+                                  offset: const Offset(0, 14),
+                                ),
                               ],
                             ),
                             child: Stack(
@@ -117,9 +183,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   right: 0,
                                   child: Column(
                                     children: const [
-                                      Icon(Icons.water_drop, color: Colors.white, size: 34),
+                                      Icon(
+                                        Icons.water_drop,
+                                        color: Colors.white,
+                                        size: 34,
+                                      ),
                                       SizedBox(height: 6),
-                                      Text('FLOW', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                      Text(
+                                        'FLOW',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -129,7 +205,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     width: double.infinity,
                                     decoration: BoxDecoration(
                                       color: Colors.white.withOpacity(0.32),
-                                      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(34)),
+                                      borderRadius: const BorderRadius.vertical(
+                                        bottom: Radius.circular(34),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -148,7 +226,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text('Quick log', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Quick log',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 14),
                     Wrap(
                       spacing: 12,
@@ -160,7 +244,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             backgroundColor: Colors.white,
                             foregroundColor: AppTheme.primary,
                             elevation: 0,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
                           child: Text('+$amount ml'),
                         );
@@ -168,15 +254,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextField(
+                      controller: _customAmountController,
                       keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _addCustomIntake(),
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: AppTheme.background,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
                         hintText: 'Custom amount',
                         suffixIcon: IconButton(
                           icon: const Icon(Icons.add),
-                          onPressed: () {},
+                          onPressed: _addCustomIntake,
                         ),
                       ),
                     ),
@@ -189,16 +281,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text('Daily hydration tip', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Daily hydration tip',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 12),
                     const Text(
                       'FLOW says: drink a glass of water before every meal to improve digestion and keep your energy steady.',
-                      style: TextStyle(color: AppTheme.textSecondary, height: 1.5),
+                      style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        height: 1.5,
+                      ),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {},
-                      style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accent, foregroundColor: AppTheme.textPrimary),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.accent,
+                        foregroundColor: AppTheme.textPrimary,
+                      ),
                       child: const Text('Chat with FLOW'),
                     ),
                   ],
@@ -216,16 +320,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         color: AppTheme.accent,
                         borderRadius: BorderRadius.circular(22),
                       ),
-                      child: const Icon(Icons.water_drop, size: 36, color: Colors.white),
+                      child: const Icon(
+                        Icons.water_drop,
+                        size: 36,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
-                          Text('FLOW is cheering for you!', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          Text(
+                            'FLOW is cheering for you!',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                           SizedBox(height: 6),
-                          Text('Keep logging water and your animated buddy will celebrate your streak.', style: TextStyle(color: AppTheme.textSecondary, height: 1.5)),
+                          Text(
+                            'Keep logging water and your animated buddy will celebrate your streak.',
+                            style: TextStyle(
+                              color: AppTheme.textSecondary,
+                              height: 1.5,
+                            ),
+                          ),
                         ],
                       ),
                     ),

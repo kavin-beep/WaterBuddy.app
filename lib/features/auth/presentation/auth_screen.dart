@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/widgets/glass_card.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/glass_card.dart';
 import '../auth_providers.dart';
 import 'email_auth_screen.dart';
 
@@ -27,12 +27,16 @@ class AuthScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               const Text(
                 'Welcome back to Water Buddy',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary),
               ),
               const SizedBox(height: 12),
               const Text(
                 'Sign in with your email or Google account to continue tracking your hydration.',
-                style: TextStyle(fontSize: 16, color: AppTheme.textSecondary, height: 1.5),
+                style: TextStyle(
+                    fontSize: 16, color: AppTheme.textSecondary, height: 1.5),
               ),
               const SizedBox(height: 32),
               GlassCard(

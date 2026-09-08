@@ -18,10 +18,14 @@ class AppTheme {
     ),
     scaffoldBackgroundColor: background,
     textTheme: const TextTheme(
-      headlineLarge: TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: textPrimary),
-      headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: textPrimary),
-      headlineSmall: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: textPrimary),
-      titleLarge: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: textPrimary),
+      headlineLarge: TextStyle(
+          fontSize: 34, fontWeight: FontWeight.bold, color: textPrimary),
+      headlineMedium: TextStyle(
+          fontSize: 28, fontWeight: FontWeight.bold, color: textPrimary),
+      headlineSmall: TextStyle(
+          fontSize: 22, fontWeight: FontWeight.bold, color: textPrimary),
+      titleLarge: TextStyle(
+          fontSize: 18, fontWeight: FontWeight.w700, color: textPrimary),
       bodyLarge: TextStyle(fontSize: 16, color: textPrimary),
       bodyMedium: TextStyle(fontSize: 14, color: textSecondary),
     ),
