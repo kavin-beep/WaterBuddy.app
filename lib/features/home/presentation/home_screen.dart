@@ -161,11 +161,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             height: 160,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(34),
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF3DD6FF), Color(0xFF2196F3)],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                              ),
+                              color: const Color(0xFFE4F7FC),
                               boxShadow: [
                                 BoxShadow(
                                   color: AppTheme.primary.withOpacity(0.22),
@@ -204,7 +200,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   child: Container(
                                     width: double.infinity,
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.32),
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          Color(0xFF3DD6FF),
+                                          Color(0xFF2196F3),
+                                        ],
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                      ),
                                       borderRadius: const BorderRadius.vertical(
                                         bottom: Radius.circular(34),
                                       ),
