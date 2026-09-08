@@ -141,8 +141,7 @@ def _undo_last() -> None:
         st.session_state.flash_message = "There is no entry to undo."
 
 
-@st.dialog("Reset today?", icon=":material/restart_alt:")
-def _confirm_reset() -> None:
+def _reset_today_confirmation() -> None:
     summary = progress_summary(st.session_state.data)
     units = st.session_state.data.get("preferences", {}).get("units", "ml")
     st.warning(
@@ -301,7 +300,7 @@ with custom:
                 st.rerun()
 
 if st.session_state.get(RESET_TODAY_PENDING_KEY):
-    _confirm_reset()
+    _reset_today_confirmation()
 
 with bottle:
     render_bottle(
