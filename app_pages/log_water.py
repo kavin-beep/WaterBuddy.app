@@ -190,15 +190,16 @@ with st.container(border=True, key="log-quick-card"):
     with st.container(horizontal=True, horizontal_alignment="distribute"):
         for amount in quick_amounts:
             amount = int(amount)
-            st.button(
+            quick_clicked = st.button(
                 f"+{format_volume(amount, units)}",
                 key=f"log_quick_{amount}",
                 icon=":material/add:",
-                on_click=_quick_add,
-                args=(amount,),
                 type="primary" if amount == quick_amounts[0] else "secondary",
                 width="stretch",
             )
+            if quick_clicked:
+                _quick_add(amount)
+                st.rerun()
 
 status, visual = st.columns([1.35, 0.85], gap="large", vertical_alignment="center")
 with status:

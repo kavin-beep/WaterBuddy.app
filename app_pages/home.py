@@ -241,15 +241,16 @@ with st.container(border=True, key="home-quick-log"):
     ):
         for amount in quick_amounts:
             amount = int(amount)
-            st.button(
+            quick_clicked = st.button(
                 f"+{format_volume(amount, units)}",
                 key=f"home_quick_{amount}",
                 icon=":material/add:",
-                on_click=_log_amount,
-                args=(amount, "Quick log"),
                 width=160,
                 type="primary" if amount == quick_amounts[0] else "secondary",
             )
+            if quick_clicked:
+                _log_amount(amount, "Quick log")
+                st.rerun()
 
     st.caption(
         ":material/shield: **Sip Guard:** A "
