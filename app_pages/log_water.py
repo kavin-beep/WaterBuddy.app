@@ -179,7 +179,7 @@ page_intro(
 )
 
 with st.container(border=True, key="log-quick-card"):
-    st.subheader("Quick intake")
+    st.subheader("Quick amounts")
     st.caption("Choose the closest amount — consistency matters more than perfect measuring.")
     if st.session_state.get(SIP_GUARD_NOTICE_KEY) or water_log_cooldown_remaining(data) > 0:
         _render_sip_guard_status()
