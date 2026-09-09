@@ -906,17 +906,18 @@ def water_log_cooldown_remaining(
 
 
 def crossed_hydration_milestone(before: float, after: float) -> int | None:
-    """Return the first hydration milestone crossed by a successful log."""
+    """Return the highest hydration milestone crossed by a successful log."""
 
     try:
         previous_progress = float(before) * 100
         current_progress = float(after) * 100
     except (TypeError, ValueError, OverflowError):
         return None
+    crossed: int | None = None
     for milestone in HYDRATION_MILESTONES:
         if previous_progress < milestone <= current_progress:
-            return milestone
-    return None
+            crossed = milestone
+    return crossed
 
 
 def _validated_water_amount(amount_ml: Any) -> int:
