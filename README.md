@@ -138,7 +138,7 @@ The suite contains **142 passing tests** covering authentication, remembered-dev
 
 <div align="center">
 
-Made Python, and Streamlit.
+Made with Python and Streamlit.
 
 ## Credits
 - Name of student: Kavin K
