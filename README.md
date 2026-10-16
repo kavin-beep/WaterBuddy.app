@@ -1,15 +1,15 @@
 <div align="center">
 
-![Water Buddy animated header](https://capsule-render.vercel.app/api?type=waving&color=0:0EA5E9,45:2563EB,100:7C3AED&height=230&section=header&text=Water%20Buddy&fontSize=64&fontColor=FFFFFF&animation=fadeIn&fontAlignY=36&desc=Every%20sip%20counts&descSize=22&descAlignY=58)
+![Water Buddy animated header](https://capsule-render.vercel.app/api?type=waving&color=0:0EA5E9,45:2563EB,100:7C3AED&height=230&section=header&text=Water%20Buddy&fontSize=64&fontColor=FFFFFF&animat[...]
 
-[![Launch Water Buddy](https://img.shields.io/badge/Launch_Water_Buddy-Live_App-0EA5E9?style=for-the-badge&logo=streamlit&logoColor=white)](https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/)
+[![Launch Water Buddy](https://img.shields.io/badge/Launch_Water_Buddy-Live_App-0EA5E9?style=for-the-badge&logo=streamlit&logoColor=white)](https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.ap[...]
 
-[![Animated introduction](https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=22&duration=2800&pause=900&color=2563EB&center=true&vCenter=true&width=760&lines=Track+water.+Build+streaks.+Raise+FLOW.;A+playful%2C+private+hydration+companion.;No+API+key.+No+cloud+account.+Just+better+habits.)](https://git.io/typing-svg)
+[![Animated introduction](https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=22&duration=2800&pause=900&color=2563EB&center=true&vCenter=true&width=760&lines=Track+water.+Build+streak[...]
 
 [![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Streamlit 1.60](https://img.shields.io/badge/Streamlit-1.60-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![Tests](https://img.shields.io/badge/tests-142%20passing-22C55E?style=for-the-badge&logo=checkmarx&logoColor=white)](#testing)
-[![Local first](https://img.shields.io/badge/data-local--first-06B6D4?style=for-the-badge&logo=shield&logoColor=white)](#privacy-by-design)
+[![Local first](https://img.shields.io/badge)data-local--first-06B6D4?style=for-the-badge&logo=shield&logoColor=white)](#privacy-by-design)
 
 **Water Buddy turns hydration into a small daily adventure—with quick logging, useful insights, gentle reminders, achievements, and a virtual companion named FLOW.**
 
@@ -116,7 +116,7 @@ The `lib/` directory and `pubspec.yaml` are retained as references from the orig
 python -m unittest discover -s tests -v
 ```
 
-The suite contains **142 passing tests** covering authentication, remembered-device login, per-user routing, logging and reward integrity, unit conversion, pet care, storage recovery, accessibility contracts, and every Streamlit page.
+The suite contains **142 passing tests** covering authentication, remembered-device login, per-user routing, logging and reward integrity, unit conversion, pet care, storage recovery, accessibili[...]
 
 ## 🔐 Privacy by design
 
@@ -140,12 +140,16 @@ The suite contains **142 passing tests** covering authentication, remembered-dev
 
 Made with Python and Streamlit.
 
+</div>
+
 ## Credits
 
--Name of student: Kavin K
--Reg. No.: 1000527
--Mentor: Syed Ali Beema S
--Name of the school: Jain Vidyalaya
+- Name of student: Kavin K
+- Reg. No.: 1000527
+- Mentor: Syed Ali Beema S
+- Name of the school: Jain Vidyalaya
+
+<div align="center">
 
 ![Water Buddy animated footer](https://capsule-render.vercel.app/api?type=waving&color=0:7C3AED,50:2563EB,100:0EA5E9&height=120&section=footer&animation=fadeIn)
 
