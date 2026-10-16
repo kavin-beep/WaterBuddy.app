@@ -138,8 +138,6 @@ The suite contains **142 passing tests** covering authentication, remembered-dev
 
 <div align="center">
 
-Made with Python and Streamlit.
-
 </div>
 
 ## Credits
@@ -148,6 +146,8 @@ Made with Python and Streamlit.
 - Reg. No.: 1000527
 - Mentor: Syed Ali Beema S
 - Name of the school: Jain Vidyalaya
+
+  Made with Python and Streamlit
 
 <div align="center">
 
