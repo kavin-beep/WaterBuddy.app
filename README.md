@@ -138,7 +138,13 @@ The suite contains **142 passing tests** covering authentication, remembered-dev
 
 <div align="center">
 
-Made with 💧, Python, and Streamlit.
+Made Python, and Streamlit.
+
+## Credits
+- Name of student: Kavin K
+- Reg. No.: 1000527
+- Mentor: Syed Ali Beema S
+- Name of the school: Jain Vidyalaya
 
 ![Water Buddy animated footer](https://capsule-render.vercel.app/api?type=waving&color=0:7C3AED,50:2563EB,100:0EA5E9&height=120&section=footer&animation=fadeIn)
 
