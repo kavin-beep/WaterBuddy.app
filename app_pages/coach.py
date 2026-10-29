@@ -1,11 +1,15 @@
-"""Offline, context-aware hydration coach."""
+"""Context-aware hydration coach with optional Groq connection."""
 
 from __future__ import annotations
 
 from collections.abc import Mapping
 from typing import Any
 
+import os
+
 import streamlit as st
+
+from water_buddy.groq_coach import GroqError, groq_reply
 
 from water_buddy.clock import local_now
 from water_buddy.domain import calculate_streak, progress_summary
@@ -122,6 +126,13 @@ def _coach_reply(
     )
 
 
+api_key = os.environ.get("GROQ_API_KEY", "").strip()
+if not api_key:
+    try:
+        api_key = str(st.secrets.get("GROQ_API_KEY", "")).strip()
+    except (FileNotFoundError, st.errors.StreamlitSecretNotFoundError):
+        api_key = ""
+
 data = st.session_state["data"]
 summary = progress_summary(data)
 units = str(data.get("preferences", {}).get("units", "ml"))
@@ -134,15 +145,15 @@ if progress > 1.5:
 percentage = max(0, round(_number(summary, "percentage", default=progress * 100)))
 
 page_intro(
-    "Offline smart coach",
+    "Groq smart coach" if api_key else "Offline smart coach",
     "Practical guidance from your own progress",
-    "FLOW uses a transparent, local rule engine to turn your Water Buddy data into useful next steps. No message leaves this app.",
-    "Private and offline",
+    "FLOW sends your chat and today's hydration totals to Groq to provide useful next steps." if api_key else "FLOW uses a transparent, local rule engine to turn your Water Buddy data into useful next steps. No message leaves this app.",
+    "Powered by Groq" if api_key else "Private and offline",
 )
 
 st.info(
-    "FLOW runs entirely on this device using transparent coaching rules and your saved hydration context.",
-    icon=":material/offline_bolt:",
+    "FLOW is connected to Groq. Chat messages and hydration totals are sent to Groq when you ask a question." if api_key else "FLOW runs entirely on this device. Add GROQ_API_KEY to .streamlit/secrets.toml to connect Groq.",
+    icon=":material/chat:" if api_key else ":material/offline_bolt:",
 )
 
 context_column, mascot_column = st.columns([1.5, 1], vertical_alignment="center")
@@ -163,7 +174,7 @@ with mascot_column:
     render_pet(coach_pet, progress, compact=True)
 
 initial_message = (
-    "I'm FLOW's offline smart coach. I can read today's Water Buddy progress and offer rule-based tips about pacing, reminders, routines, and goals."
+    "I'm FLOW, your Groq-powered hydration coach. Ask me about today's progress, pacing, reminders, routines, or goals." if api_key else "I'm FLOW's offline smart coach. I can read today's Water Buddy progress and offer rule-based tips about pacing, reminders, routines, and goals."
 )
 st.session_state.setdefault(
     "coach_messages",
@@ -175,6 +186,8 @@ if not isinstance(messages, list) or not messages:
     st.session_state["coach_messages"] = messages
 elif len(messages) > MAX_COACH_MESSAGES:
     messages[:] = [messages[0], *messages[-(MAX_COACH_MESSAGES - 1) :]]
+if isinstance(messages[0], Mapping) and messages[0].get("role") == "assistant":
+    messages[0] = {"role": "assistant", "content": initial_message}
 
 st.subheader("Chat with FLOW")
 with st.container(horizontal=True, horizontal_alignment="right"):
@@ -228,7 +241,23 @@ if pending_prompt and pending_prompt.strip():
     with st.chat_message("user"):
         st.write(clean_prompt)
 
-    response = _coach_reply(clean_prompt, data, summary)
+    if api_key:
+        try:
+            with st.spinner("FLOW is thinking…"):
+                response = groq_reply(api_key, messages, {
+                    "intake_ml": intake, "goal_ml": goal,
+                    "remaining_ml": remaining, "percentage": percentage,
+                    "units": units,
+                    "streak_days": calculate_streak(data),
+                    "local_hour": local_now().hour,
+                    "reminders_enabled": data.get("preferences", {}).get("reminders_enabled", True),
+                    "reminder_interval_minutes": data.get("preferences", {}).get("reminder_interval_minutes", 45),
+                })
+        except GroqError as exc:
+            st.warning(f"{exc} Showing an offline reply for now.")
+            response = _coach_reply(clean_prompt, data, summary)
+    else:
+        response = _coach_reply(clean_prompt, data, summary)
     messages.append({"role": "assistant", "content": response})
     if len(messages) > MAX_COACH_MESSAGES:
         messages[:] = [messages[0], *messages[-(MAX_COACH_MESSAGES - 1) :]]
