@@ -1,156 +1,213 @@
-<div align="center">
+# 💧 Water Buddy
 
-![Water Buddy animated header](https://capsule-render.vercel.app/api?type=waving&color=0:0EA5E9,45:2563EB,100:7C3AED&height=230&section=header&text=Water%20Buddy&fontSize=64&fontColor=FFFFFF&animation=fadeIn)
+**Track water, build daily habits, care for your virtual pet, and chat with FLOW.**
 
-[![Launch Water Buddy](https://img.shields.io/badge/Launch_Water_Buddy-Live_App-0EA5E9?style=for-the-badge&logo=streamlit&logoColor=white)](https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/)
+[Open Water Buddy](https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/) · [Groq API keys](https://console.groq.com/keys) · [Report an issue](https://github.com/kavin-beep/WaterBuddy.app/issues)
 
-[![Animated introduction](https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=22&duration=2800&pause=900&color=2563EB&center=true&vCenter=true&width=760&lines=Track+water.+Build+streaks.+Care+for+FLOW)]
+Water Buddy is a Python and Streamlit hydration app with personal dashboards, water logging, insights, achievements, reminders, and a virtual companion. FLOW answers questions through Groq using your current hydration context. Without a key—or when Groq cannot respond—the coach uses built-in offline rules.
 
-[![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Streamlit 1.60](https://img.shields.io/badge/Streamlit-1.60-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
-[![Tests](https://img.shields.io/badge/tests-142%20passing-22C55E?style=for-the-badge&logo=checkmarx&logoColor=white)](#testing)
-[![Local first](https://img.shields.io/badge/data-local--first-06B6D4?style=for-the-badge&logo=shield&logoColor=white)](#privacy-by-design)
+## Features
 
-**Water Buddy turns hydration into a small daily adventure—with quick logging, useful insights, gentle reminders, achievements, and a virtual companion named FLOW.**
+| Area | What it does |
+| --- | --- |
+| Home | Daily intake, goal progress, pace, and your companion. |
+| Log water | Quick amounts, custom entries, editing, deletion, undo, and duplicate-entry protection. |
+| Pet room | Care, moods, customization, quests, XP, levels, and evolution. |
+| Insights | Hydration trends, adherence, streaks, and weekly challenges. |
+| Achievements | Badges and milestone celebrations. |
+| Reminders | Configurable intervals, quiet hours, snooze, and dismiss controls. |
+| FLOW coach | Groq answers with recent conversation history and offline fallback. |
+| Profile | Goals, preferences, units, themes, and backup import/export. |
+| Accounts | Sign-in, per-account data, and remembered-device login. |
+| Download app | Windows shortcut installer for the hosted website. |
 
-streamlit app deploy link: https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/
+Preferences include Dark, Light, Japanese, and Cyber themes, metric or US fluid-ounce units, ambience, and sound controls.
 
-</div>
+## Run locally
 
-> [!NOTE]
-> FLOW uses a transparent offline coaching engine. The complete app works without an AI service, API key, or network connection.
+Use **Python 3.12 or newer**, Git, and an internet connection to install dependencies. Run commands from the repository root.
 
-## ✨ Why Water Buddy?
-
-| Experience | What you get |
-|:--|:--|
-| 🫗 **Effortless tracking** | Four customizable one-tap amounts, custom entries, editing, deletion, undo, and safe reset |
-| 🎯 **Personal goals** | Age- and occupation-aware guidance, custom adjustments, and manual goal overrides |
-| 💙 **FLOW hydration pet** | Moods, care actions, daily quests, hourly messages, 20 XP levels, evolution, and milestone outfits |
-| 📊 **Useful insights** | 7/14/30-day trends, adherence, streaks, calendar-week challenges, and fair scoring for new users |
-| 🏆 **Motivation** | Eight canonical achievement badges, daily tips, live pace feedback, and goal celebrations |
-| 🔔 **Gentle reminders** | Configurable intervals, quiet hours, snooze/dismiss actions, and automatic rest after reaching your goal |
-| 🎨 **Made for you** | Dark, Light, Japanese, and Cyber themes, responsive layouts, ambience, sounds, and metric or US fl oz display |
-| 🛡️ **Resilient storage** | Atomic JSON writes, last-known-good backups, corruption recovery, validated imports, and local export |
-
-## 🚀 Run locally
-
-Water Buddy requires **Python 3.12 or newer**.
+### Windows (PowerShell)
 
 ```powershell
 git clone https://github.com/kavin-beep/WaterBuddy.app.git
 cd WaterBuddy.app
-
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python -m streamlit run streamlit_app.py
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m streamlit run streamlit_app.py
 ```
 
-Open the Streamlit link, use **Sign in / Quick Login** on the public Home page,
-then create an account or sign in. Keep **Remember this device** selected to open
-future visits directly on your private Home dashboard. Water Buddy stores a
-revocable device token for this convenience—never the account password—and
-explicit **Sign out** removes Quick Login from that browser.
+These commands use the virtual environment directly; PowerShell activation is not required.
 
-The public **Download app** page provides a small Windows ZIP installer. It
-adds a WaterBuddy icon to the Desktop and opens the hosted app in Chrome app
-mode (or the default browser when Chrome is unavailable); it does not install
-background software or add a Windows startup item.
-
-<details>
-<summary><strong>macOS / Linux commands</strong></summary>
+### macOS / Linux
 
 ```bash
+git clone https://github.com/kavin-beep/WaterBuddy.app.git
+cd WaterBuddy.app
 python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-python -m streamlit run streamlit_app.py
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m streamlit run streamlit_app.py
 ```
 
-</details>
+Open the URL printed by Streamlit, then create an account or sign in. **Remember this device** uses a revocable browser token rather than your password. Explicitly signing out removes Quick Login from that browser.
 
-## ☁️ Deploy on Streamlit Community Cloud
+## Connect FLOW to Groq
 
-The repository is deployment-ready: `streamlit_app.py`, `requirements.txt`, and `.streamlit/config.toml` are all in the expected locations.
+The API request runs on the Streamlit server. Keep the key in server-side configuration, never in source code, a chat message, or a public GitHub file.
 
-1. Push this repository to GitHub.
-2. Sign in to [Streamlit Community Cloud](https://share.streamlit.io/).
-3. Select **Create app**, then choose this repository and branch.
-4. Set the main file path to `streamlit_app.py`.
-5. Open **Advanced settings**, select a supported Python version (3.12+), and deploy.
+### Local app
 
-No secrets are required. For public multi-user use, replace local JSON authentication/storage with managed identity and database services first.
+1. Create a key in the [Groq console](https://console.groq.com/keys).
+2. Copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml`.
+3. Set the key in that file:
 
-## 🧭 App map
+   ```toml
+   GROQ_API_KEY = "paste-your-real-key-here"
+   ```
+
+4. Save and restart Streamlit.
+5. Open **FLOW coach** and check for **Powered by Groq**.
+
+The secrets file is ignored by Git. Alternatively, set a `GROQ_API_KEY` environment variable on the server. A nonempty environment variable takes precedence over Streamlit Secrets.
+
+### Hosted Streamlit app
+
+1. Open **Manage app → Settings → Secrets** in the deployed app.
+2. Add the `GROQ_API_KEY` setting shown above, preserving other existing secrets.
+3. Select **Save changes** and allow it to propagate. Reboot from the management menu if needed.
+4. Return to FLOW and check for **Powered by Groq**.
+
+**Saving a key on your computer does not configure the hosted app.** Never upload the actual secrets file to GitHub.
+
+### How FLOW works
+
+- Uses Groq's chat-completions API with `openai/gpt-oss-120b`.
+- Sends up to 20 recent chat messages, excluding the initial greeting, together with intake, goal, remaining amount, progress percentage, display units, streak, local hour, and reminder settings.
+- Keeps at most 51 messages in the page session, including the greeting. **Clear chat** resets the conversation.
+- Uses a 25-second request timeout. Authentication errors, quota limits, connection failures, and invalid responses show a warning and use an offline answer.
+- Cannot change settings, log water, or send notifications on your behalf. Use the corresponding app page.
+- Offers general habit support, not diagnosis or medical advice. AI answers can be inaccurate.
+
+Try asking:
+
+- “How much water is left today?”
+- “Make a gentle plan for the rest of the day.”
+- “Are my reminders enabled?”
+- “How can I keep my streak going?”
+- Follow up with “Explain that in one sentence.”
+
+The offline coach recognizes hydration topics with local rules; it is not a general-purpose AI chatbot. Groq requires internet access, model access, and available quota. Usage is associated with the configured Groq key.
+
+## Deploy on Streamlit Community Cloud
+
+1. Sign in to [Streamlit Community Cloud](https://share.streamlit.io/).
+2. Create an app using this repository and the `main` branch.
+3. Set the entry file to `streamlit_app.py` and select a supported Python version of 3.12 or newer.
+4. Add `GROQ_API_KEY` in the app's Secrets for AI responses.
+5. Deploy and check the FLOW connection banner.
+
+The app runs without Groq configuration using offline coaching. The hosted website still requires an internet connection to its server.
+
+## Data and privacy
+
+JSON data lives on the **machine running the Streamlit server**: your computer for a local installation, or the hosting environment for a deployment. It is not automatically browser-only storage.
+
+| Data | Location or handling |
+| --- | --- |
+| Accounts | `data/accounts.json` |
+| Hydration profiles | `data/users/` |
+| Password verification | Salted PBKDF2-HMAC-SHA256 hashes |
+| Remembered login | Browser token; server stores its digest |
+| Profile recovery | Atomic writes and `.bak` copies |
+| Groq key | Server environment or Streamlit Secrets |
+| Chat history | Streamlit session state; recent messages go to Groq when AI is enabled |
+
+Set `WATER_BUDDY_DATA_DIR` to choose a different server-side data directory. Account files, user data, and local secrets are excluded by `.gitignore`.
+
+With Groq enabled, chat content and the listed hydration context leave the app for processing by Groq. The request does not include account passwords or the complete account database. Anything typed in chat may be included in a request.
+
+The file-based account system is intended for a prototype or private installation. Use managed identity and durable database storage before relying on a public multi-user deployment. Export important data: hosted files may not survive a hosting change, and a `.bak` file on the same host is not an independent backup.
+
+## Reminders and Windows shortcut
+
+Reminders are in-app prompts. Keep the tab and Streamlit server running; there is no background Windows reminder service. Quiet hours, snooze, and reaching the daily goal affect when prompts appear.
+
+The **Download app** page provides a Windows ZIP installer that creates a desktop shortcut. It opens the hosted website in Chrome app mode, or the default browser if Chrome is unavailable. It is not a standalone offline app and does not add a startup service.
+
+## Project structure
 
 ```text
-Welcome → Home → Log Water → Insights → Achievements
-                 ├── FLOW Pet
-                 ├── Coach
-                 ├── Reminders
-                 └── Profile & Preferences
+streamlit_app.py                 App shell, authentication, navigation, reminders
+app_pages/                      Streamlit pages, including coach.py
+water_buddy/
+  auth.py                       Accounts, password verification, device sessions
+  device_login.py               Remembered-device browser integration
+  clock.py                      Per-session timezone handling
+  domain.py                     Goals, entries, streaks, badges, reminders
+  groq_coach.py                  Groq requests and safe error handling
+  pet.py                        Pet progression, care, customization, quests
+  storage.py                    JSON persistence, validation, recovery
+  units.py                      Volume conversion and formatting
+  ui.py                         Shared interface and pet rendering
+  streamlit_theme.py            Streamlit theme integration
+  audio.py                      Hydration feedback sounds
+  interaction_audio.py          Browser interface sounds
+  windows_download.py           Windows shortcut package
+.streamlit/
+  config.toml                   Streamlit configuration
+  secrets.toml.example          Key template without a real key
+requirements.txt                Python dependencies
+tests/                          Unit and Streamlit page tests
 ```
 
-## 🏗️ Architecture
+`lib/`, `pubspec.yaml`, and `pubspec.lock` are retained from the original Flutter prototype. The deployed app and Groq integration documented here are the Streamlit implementation.
 
-```text
-streamlit_app.py                 App shell, authentication gate, navigation, reminders
-app_pages/                       Streamlit page modules
-water_buddy/auth.py              Account validation and salted password hashing
-water_buddy/domain.py            Goals, water entries, streaks, badges, and reminders
-water_buddy/pet.py               Pet progression, care, customization, and quests
-water_buddy/storage.py           Thread-safe atomic JSON persistence and recovery
-water_buddy/units.py             Canonical volume conversion and formatting
-water_buddy/ui.py                Shared design system and animated pet rendering
-water_buddy/audio.py             Dependency-free hydration feedback sounds
-water_buddy/interaction_audio.py Browser-native interface feedback sounds
-tests/                           Domain, storage, auth, UI, and page-level test suite
-```
+## Testing
 
-The `lib/` directory and `pubspec.yaml` are retained as references from the original Flutter prototype. The production app is the Streamlit implementation launched by `streamlit_app.py`.
+Using the Python interpreter where dependencies are installed:
 
-## 🧪 Testing
-
-```powershell
+```bash
 python -m unittest discover -s tests -v
 ```
 
-The suite contains **142 passing tests** covering authentication, remembered-device login, per-user routing, logging and reward integrity, unit conversion, pet care, storage recovery, accessibili[...]
+On Windows with the virtual environment above:
 
-## 🔐 Privacy by design
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
 
-- Account records live in `data/accounts.json`; hydration profiles live in `data/users/`. Both are ignored by Git.
-- Passwords are stored as salted PBKDF2 hashes, never as plaintext.
-- Profile writes are atomic and maintain a matching `.bak` safety copy.
-- Damaged documents are preserved as recovery evidence before a valid backup or safe default is restored.
-- Imported backups are schema-checked and previewed before confirmation.
-- No API key, cloud account, analytics service, or external AI provider is required.
+For only the Groq integration tests:
 
-> [!IMPORTANT]
-> This local account model is intended for private use on your own machine. Use managed identity and database services before deploying Water Buddy as a public multi-user application.
+```bash
+python -m unittest discover -s tests -p test_groq_coach.py -v
+```
 
-## ℹ️ Good to know
+**Verification on October 29, 2026:** all 150 automated tests passed on Windows with Python 3.13 and Streamlit 1.60.0. Coverage includes domain rules, accounts, device sessions, timezones, storage recovery, units, pets, themes, accessibility contracts, downloads, and page interactions.
 
-- Reminders operate while the Water Buddy browser tab and server are running.
-- Sip Guard prevents duplicate entries for 30 seconds without changing intake, XP, achievements, sounds, or saved data.
-- Water Buddy offers general wellness guidance, not medical advice. Personal needs can vary with health conditions, pregnancy, medications, weather, and clinician guidance.
+Groq tests mock network responses to check history, error handling, chat, clearing messages, and fallback without consuming API quota. Separate live Groq tests confirmed question-specific answers and follow-up context. The hosted app's connection banner was also checked after configuring its secret.
 
-<div align="center">
+Passing tests do not guarantee every browser, hosting environment, or future API response will work. Live API tests and deployed-browser checks are separate from the automated suite.
 
-</div>
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| FLOW says it runs entirely on this device | Configure a nonempty `GROQ_API_KEY` on the running server: local Secrets or hosted Secrets as appropriate. |
+| Groq rejects the key | Check Secrets and any environment variable that overrides it. Never post the key in an issue. |
+| Usage-limit warning | Check Groq quota and rate limits; wait before retrying. |
+| Groq unavailable | Check connectivity, provider availability, and access to the configured model. The app falls back to offline coaching. |
+| TOML error | Use `GROQ_API_KEY = "..."` with ordinary quotes and no Markdown fences in the Secrets editor. |
+| Hosted app shows old behavior | Confirm this repository and `main` branch are selected, allow updates to propagate, then reboot if needed. |
+| No reminders | Check enabled state, quiet hours, snooze, goal completion, and whether the tab and server are running. |
+| Missing data after a hosting change | Restore an exported backup and use durable storage where persistence is required. |
+
+For bug reports, include the page, reproduction steps, expected and actual behavior, and Python/Streamlit versions. Remove secrets and private account data from screenshots and logs.
 
 ## Credits
 
-- Name of student: Kavin K
-- Reg. No.: 1000527
-- Mentor: Syed Ali Beema S
-- Name of the school: Jain Vidyalaya
+- **Student:** Kavin K
+- **Registration number:** 1000527
+- **Mentor:** Syed Ali Beema S
+- **School:** Jain Vidyalaya
 
-  Made with Python and Streamlit
-
-<div align="center">
-
-![Water Buddy animated footer](https://capsule-render.vercel.app/api?type=waving&color=0:7C3AED,50:2563EB,100:0EA5E9&height=120&section=footer&animation=fadeIn)
-
-</div>
+Built with Python and Streamlit. AI coaching is served through Groq.
