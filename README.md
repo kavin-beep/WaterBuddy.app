@@ -1,12 +1,35 @@
-# 💧 Water Buddy
+<div align="center">
 
-**Track water, build daily habits, care for your virtual pet, and chat with FLOW.**
+<img src="https://capsule-render.vercel.app/api?type=waving&amp;color=0:06B6D4,50:2563EB,100:7C3AED&amp;height=240&amp;section=header&amp;text=Water%20Buddy&amp;fontSize=66&amp;fontColor=FFFFFF&amp;animation=fadeIn&amp;desc=Small%20sips.%20Stronger%20habits.&amp;descSize=19&amp;descAlignY=73" width="100%" alt="Water Buddy — Small sips. Stronger habits." />
 
-[Open Water Buddy](https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/) · [Groq API keys](https://console.groq.com/keys) · [Report an issue](https://github.com/kavin-beep/WaterBuddy.app/issues)
+<a href="https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/">
+<img src="https://readme-typing-svg.demolab.com?font=Inter&amp;weight=600&amp;size=23&amp;duration=3000&amp;pause=1400&amp;color=38BDF8&amp;center=true&amp;vCenter=true&amp;width=700&amp;height=55&amp;lines=Track+your+water.+Find+your+rhythm.;Care+for+your+pet.+Build+your+streak.;Meet+FLOW%2C+your+AI+hydration+coach." alt="Track your water. Care for your pet. Meet FLOW, your AI hydration coach." />
+</a>
+
+**Your daily hydration companion, with a little personality.**
+
+Track water · Build habits · Care for your pet · Chat with FLOW
+
+[![Open Water Buddy](https://img.shields.io/badge/OPEN_WATER_BUDDY-2563EB?style=for-the-badge&logo=streamlit&logoColor=white)](https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/)
+[![Meet FLOW](https://img.shields.io/badge/MEET_FLOW-7C3AED?style=for-the-badge)](#-meet-flow)
+[![Quick start](https://img.shields.io/badge/RUN_LOCALLY-0891B2?style=for-the-badge&logo=python&logoColor=white)](#-run-locally)
+
+![Python](https://img.shields.io/badge/Python-3.12%2B-0F172A?style=flat-square&logo=python&logoColor=38BDF8)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.60-0F172A?style=flat-square&logo=streamlit&logoColor=FB7185)
+![Groq](https://img.shields.io/badge/AI-Groq-0F172A?style=flat-square)
+[![Test snapshot](https://img.shields.io/badge/150_tests-passed_29_Oct_2026-0F172A?style=flat-square&labelColor=166534)](#-testing)
+
+[Explore](#-the-water-buddy-experience) · [Meet FLOW](#-meet-flow) · [Setup](#-run-locally) · [Deploy](#-deploy-on-streamlit-community-cloud) · [Privacy](#-data-and-privacy) · [Troubleshooting](#-troubleshooting)
+
+</div>
+
+---
+
+> **A small daily ritual.** Log a drink, watch your progress grow, and give your companion a reason to smile.
 
 Water Buddy is a Python and Streamlit hydration app with personal dashboards, water logging, insights, achievements, reminders, and a virtual companion. FLOW answers questions through Groq using your current hydration context. Without a key—or when Groq cannot respond—the coach uses built-in offline rules.
 
-## Features
+## ✨ The Water Buddy experience
 
 | Area | What it does |
 | --- | --- |
@@ -23,7 +46,7 @@ Water Buddy is a Python and Streamlit hydration app with personal dashboards, wa
 
 Preferences include Dark, Light, Japanese, and Cyber themes, metric or US fluid-ounce units, ambience, and sound controls.
 
-## Run locally
+## 🚀 Run locally
 
 Use **Python 3.12 or newer**, Git, and an internet connection to install dependencies. Run commands from the repository root.
 
@@ -51,7 +74,32 @@ python3 -m venv .venv
 
 Open the URL printed by Streamlit, then create an account or sign in. **Remember this device** uses a revocable browser token rather than your password. Explicitly signing out removes Quick Login from that browser.
 
-## Connect FLOW to Groq
+## 💬 Meet FLOW
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### ✦ When Groq is connected
+
+Ask a question in your own words, get an answer grounded in your hydration context, and follow up naturally.
+
+**Try:** “Make a gentle plan for the rest of my day.”
+
+</td>
+<td width="50%" valign="top">
+
+### ◇ When you're offline
+
+Built-in coaching rules provide practical hydration tips when no key is configured or the API cannot respond.
+
+**Always clear:** a failed API request is identified before the fallback answer.
+
+</td>
+</tr>
+</table>
+
+### Connect FLOW to Groq
 
 The API request runs on the Streamlit server. Keep the key in server-side configuration, never in source code, a chat message, or a public GitHub file.
 
@@ -98,7 +146,7 @@ Try asking:
 
 The offline coach recognizes hydration topics with local rules; it is not a general-purpose AI chatbot. Groq requires internet access, model access, and available quota. Usage is associated with the configured Groq key.
 
-## Deploy on Streamlit Community Cloud
+## ☁️ Deploy on Streamlit Community Cloud
 
 1. Sign in to [Streamlit Community Cloud](https://share.streamlit.io/).
 2. Create an app using this repository and the `main` branch.
@@ -108,7 +156,7 @@ The offline coach recognizes hydration topics with local rules; it is not a gene
 
 The app runs without Groq configuration using offline coaching. The hosted website still requires an internet connection to its server.
 
-## Data and privacy
+## 🔐 Data and privacy
 
 JSON data lives on the **machine running the Streamlit server**: your computer for a local installation, or the hosting environment for a deployment. It is not automatically browser-only storage.
 
@@ -128,13 +176,16 @@ With Groq enabled, chat content and the listed hydration context leave the app f
 
 The file-based account system is intended for a prototype or private installation. Use managed identity and durable database storage before relying on a public multi-user deployment. Export important data: hosted files may not survive a hosting change, and a `.bak` file on the same host is not an independent backup.
 
-## Reminders and Windows shortcut
+## 🔔 Reminders and Windows shortcut
 
 Reminders are in-app prompts. Keep the tab and Streamlit server running; there is no background Windows reminder service. Quiet hours, snooze, and reaching the daily goal affect when prompts appear.
 
 The **Download app** page provides a Windows ZIP installer that creates a desktop shortcut. It opens the hosted website in Chrome app mode, or the default browser if Chrome is unavailable. It is not a standalone offline app and does not add a startup service.
 
-## Project structure
+## 🧩 Project structure
+
+<details>
+<summary><strong>Explore the codebase</strong></summary>
 
 ```text
 streamlit_app.py                 App shell, authentication, navigation, reminders
@@ -162,7 +213,9 @@ tests/                          Unit and Streamlit page tests
 
 `lib/`, `pubspec.yaml`, and `pubspec.lock` are retained from the original Flutter prototype. The deployed app and Groq integration documented here are the Streamlit implementation.
 
-## Testing
+</details>
+
+## 🧪 Testing
 
 Using the Python interpreter where dependencies are installed:
 
@@ -188,7 +241,10 @@ Groq tests mock network responses to check history, error handling, chat, cleari
 
 Passing tests do not guarantee every browser, hosting environment, or future API response will work. Live API tests and deployed-browser checks are separate from the automated suite.
 
-## Troubleshooting
+## 🛠️ Troubleshooting
+
+<details>
+<summary><strong>Connection, configuration, reminders, and data help</strong></summary>
 
 | Symptom | Check |
 | --- | --- |
@@ -203,7 +259,9 @@ Passing tests do not guarantee every browser, hosting environment, or future API
 
 For bug reports, include the page, reproduction steps, expected and actual behavior, and Python/Streamlit versions. Remove secrets and private account data from screenshots and logs.
 
-## Credits
+</details>
+
+## 💙 Credits
 
 - **Student:** Kavin K
 - **Registration number:** 1000527
@@ -211,3 +269,17 @@ For bug reports, include the page, reproduction steps, expected and actual behav
 - **School:** Jain Vidyalaya
 
 Built with Python and Streamlit. AI coaching is served through Groq.
+
+---
+
+<div align="center">
+
+**One sip at a time. One habit at a time.**
+
+[Open Water Buddy](https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/) · [Get a Groq key](https://console.groq.com/keys) · [Report an issue](https://github.com/kavin-beep/WaterBuddy.app/issues)
+
+<sub>Made for mindful hydration · Built by Kavin K</sub>
+
+<img src="https://capsule-render.vercel.app/api?type=waving&amp;color=0:7C3AED,50:2563EB,100:06B6D4&amp;height=120&amp;section=footer" width="100%" alt="Blue and violet decorative wave" />
+
+</div>
