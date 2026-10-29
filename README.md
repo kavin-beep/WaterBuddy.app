@@ -1,3 +1,7 @@
+## 🚀 [Open Water Buddy — Live App](https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/)
+
+**Deployment:** [https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/](https://waterbuddyapp-eqqehr8sj4lxskbvmsxnu9.streamlit.app/)
+
 <div align="center">
 
 <img src="https://capsule-render.vercel.app/api?type=waving&amp;color=0:06B6D4,50:2563EB,100:7C3AED&amp;height=240&amp;section=header&amp;text=Water%20Buddy&amp;fontSize=66&amp;fontColor=FFFFFF&amp;animation=fadeIn&amp;desc=Small%20sips.%20Stronger%20habits.&amp;descSize=19&amp;descAlignY=73" width="100%" alt="Water Buddy — Small sips. Stronger habits." />
