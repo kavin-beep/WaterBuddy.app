@@ -10,6 +10,10 @@ import os
 import streamlit as st
 
 from water_buddy.groq_coach import GroqError, groq_reply
+from water_buddy.coach_settings import (
+    FIELDS, SettingsProposal, apply_settings, display_setting, settings_snapshot,
+)
+from water_buddy.storage import StorageError
 
 from water_buddy.clock import local_now
 from water_buddy.domain import calculate_streak, progress_summary
@@ -174,7 +178,7 @@ with mascot_column:
     render_pet(coach_pet, progress, compact=True)
 
 initial_message = (
-    "I'm FLOW, your Groq-powered hydration coach. Ask me about today's progress, pacing, reminders, routines, or goals." if api_key else "I'm FLOW's offline smart coach. I can read today's Water Buddy progress and offer rule-based tips about pacing, reminders, routines, and goals."
+    "I'm FLOW, your hydration coach. Ask about your progress or ask me to update your goal, reminders, appearance, or profile. I'll show a preview before saving settings." if api_key else "I'm FLOW's offline smart coach. I can read today's Water Buddy progress and offer rule-based tips about pacing, reminders, routines, and goals. Settings changes through chat need a Groq connection."
 )
 st.session_state.setdefault(
     "coach_messages",
@@ -197,6 +201,7 @@ with st.container(horizontal=True, horizontal_alignment="right"):
         type="tertiary",
         key="coach_clear_chat",
     ):
+        st.session_state.pop("coach_pending_settings", None)
         st.session_state["coach_messages"] = [
             {"role": "assistant", "content": initial_message}
         ]
@@ -228,7 +233,7 @@ for message in messages:
         st.write(str(message.get("content", "")))
 
 typed_prompt = st.chat_input(
-    "Ask about your goal, pace, reminders, or routine",
+    "Ask a question or update your goal, reminders, theme, or profile",
     key="coach_chat_input",
     submit_mode="disable",
 )
@@ -236,6 +241,8 @@ if typed_prompt:
     pending_prompt = str(typed_prompt)
 
 if pending_prompt and pending_prompt.strip():
+    if st.session_state.pop("coach_pending_settings", None):
+        messages.append({"role": "assistant", "content": "The previous settings preview was replaced without saving any changes."})
     clean_prompt = pending_prompt.strip()[:1000]
     messages.append({"role": "user", "content": clean_prompt})
     with st.chat_message("user"):
@@ -252,7 +259,15 @@ if pending_prompt and pending_prompt.strip():
                     "local_hour": local_now().hour,
                     "reminders_enabled": data.get("preferences", {}).get("reminders_enabled", True),
                     "reminder_interval_minutes": data.get("preferences", {}).get("reminder_interval_minutes", 45),
+                    "current_settings": settings_snapshot(data),
                 })
+            if isinstance(response, SettingsProposal):
+                st.session_state["coach_pending_settings"] = {
+                    "changes": response.changes,
+                    "expected": settings_snapshot(data),
+                    "owner": st.session_state.get("active_user_id"),
+                }
+                response = "I've prepared your settings update below. Review it and choose Apply changes to save it. Nothing has changed yet."
         except GroqError as exc:
             st.warning(f"{exc} Showing an offline reply for now.")
             response = _coach_reply(clean_prompt, data, summary)
@@ -263,6 +278,46 @@ if pending_prompt and pending_prompt.strip():
         messages[:] = [messages[0], *messages[-(MAX_COACH_MESSAGES - 1) :]]
     with st.chat_message("assistant", avatar=":material/water_drop:"):
         st.write(response)
+
+pending_settings = st.session_state.get("coach_pending_settings")
+if pending_settings:
+    if pending_settings.get("owner") != st.session_state.get("active_user_id"):
+        st.session_state.pop("coach_pending_settings", None)
+    else:
+        with st.container(border=True):
+            st.subheader("Review your settings update")
+            st.table([
+                {"Setting": FIELDS[name][2],
+                 "Current": display_setting(name, pending_settings["expected"].get(name)),
+                 "New": display_setting(name, value)}
+                for name, value in pending_settings["changes"].items()
+            ])
+            with st.container(horizontal=True):
+                apply_clicked = st.button("Apply changes", type="primary", key="coach_apply_settings")
+                cancel_clicked = st.button("Cancel", key="coach_cancel_settings")
+            if cancel_clicked:
+                st.session_state.pop("coach_pending_settings", None)
+                messages.append({"role": "assistant", "content": "Settings update cancelled. Nothing was changed."})
+                st.rerun()
+            if apply_clicked:
+                try:
+                    saved_message = apply_settings(
+                        data, st.session_state["store"],
+                        pending_settings["changes"], pending_settings["expected"],
+                    )
+                except (ValueError, StorageError, OSError):
+                    st.session_state.pop("coach_pending_settings", None)
+                    messages.append({"role": "assistant", "content": "I couldn't confirm that this update was saved. Settings may have changed or storage may be unavailable. Check your settings and ask me again."})
+                    st.rerun()
+                else:
+                    st.session_state.pop("coach_pending_settings", None)
+                    for key in list(st.session_state):
+                        if key.startswith("profile_"):
+                            del st.session_state[key]
+                    st.session_state["reminders_test_active"] = False
+                    messages.append({"role": "assistant", "content": saved_message})
+                    st.session_state["flash_message"] = "Your settings were updated by FLOW."
+                    st.rerun()
 
 st.caption(
     "FLOW provides general habit support, not diagnosis or medical care. For medical or fluid-restriction questions, consult a qualified clinician."
