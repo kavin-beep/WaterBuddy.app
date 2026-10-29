@@ -19,7 +19,7 @@ Track water · Build habits · Care for your pet · Chat with FLOW
 ![Groq](https://img.shields.io/badge/AI-Groq-0F172A?style=flat-square)
 [![Test snapshot](https://img.shields.io/badge/150_tests-passed_29_Oct_2026-0F172A?style=flat-square&labelColor=166534)](#-testing)
 
-[Explore](#-the-water-buddy-experience) · [Meet FLOW](#-meet-flow) · [Setup](#-run-locally) · [Deploy](#-deploy-on-streamlit-community-cloud) · [Privacy](#-data-and-privacy) · [Troubleshooting](#-troubleshooting)
+[Explore](#-the-water-buddy-experience) · [Meet FLOW](#-meet-flow) · [Setup](#-run-locally) · [Deploy](#deployment) · [Privacy](#-data-and-privacy) · [Troubleshooting](#troubleshooting)
 
 </div>
 
@@ -146,6 +146,8 @@ Try asking:
 
 The offline coach recognizes hydration topics with local rules; it is not a general-purpose AI chatbot. Groq requires internet access, model access, and available quota. Usage is associated with the configured Groq key.
 
+<a id="deployment"></a>
+
 ## ☁️ Deploy on Streamlit Community Cloud
 
 1. Sign in to [Streamlit Community Cloud](https://share.streamlit.io/).
@@ -240,6 +242,8 @@ python -m unittest discover -s tests -p test_groq_coach.py -v
 Groq tests mock network responses to check history, error handling, chat, clearing messages, and fallback without consuming API quota. Separate live Groq tests confirmed question-specific answers and follow-up context. The hosted app's connection banner was also checked after configuring its secret.
 
 Passing tests do not guarantee every browser, hosting environment, or future API response will work. Live API tests and deployed-browser checks are separate from the automated suite.
+
+<a id="troubleshooting"></a>
 
 ## 🛠️ Troubleshooting
 
